@@ -1,17 +1,26 @@
 public class Customer extends User{
-    // Data fields
+    // Attributes
     private int numOfReservations;
 
     // Constructors
-    public Customer(String ID, String firstName, String lastName, String phoneNumber, String password) {
-        super(ID, firstName, lastName, phoneNumber, password);
+    public Customer(){}
+    public Customer(String firstName, String lastName, String phoneNumber, String password) {
+        super(firstName, lastName, phoneNumber, password);
     }
 
-    // Methods
+    // Getter
     public int getNumOfReservations(){
         return numOfReservations;
     }
 
+    // Other methods
+    public void addReservation(){
+        numOfReservations++;
+    }
+
+    public void cancelReservation(){
+        numOfReservations--;
+    }
     @Override
     public String toString() {
         return (String.format("%-15s %-25s %-12s %-10d", getID(), (getFirstName() + getLastName()), getPhoneNumber(), numOfReservations));
