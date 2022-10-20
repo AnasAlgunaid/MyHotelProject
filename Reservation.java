@@ -75,13 +75,14 @@ public class Reservation {
 
     // Other methods
     public double calculateTotalPrice(){
-        return ((DAYS.between(check_in, check_out)) * this.room.getPricePerNight());
+        return ((DAYS.between(check_in, check_out)) * this.room.getPrice());
     }
 
     public String generateReservationID(){
         // include the first two letters of the customer's name in the reservation ID.
-        String reservationID = "" + this.customer.getFirstName().substring(0, 3);
+//        String reservationID = "" + this.customer.getFirstName().substring(0, 3);
         // Generate random id of 5 numbers
+        reservationID = "";
         Random random = new Random();
         for(int i = 0; i < 5; i++){
             int randomNum = random.nextInt(10);
@@ -89,5 +90,13 @@ public class Reservation {
         }
 
         return reservationID;
+    }
+
+    @Override
+    public String toString() {
+        return (String.format("%-15s %-15s %-15s %-20s %-20s %-15s",
+                this.reservationID, customer.getPhoneNumber(),
+                room.getRoomNumber(), this.check_in.toString(),
+                this.check_out.toString(), this.totalPrice));
     }
 }

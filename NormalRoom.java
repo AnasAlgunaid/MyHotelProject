@@ -3,8 +3,8 @@ public class NormalRoom extends Room{
     private int numOfBeds;
 
     // Constructors
-    public NormalRoom(int roomNumber, double price, boolean available, int numOfBeds) {
-        super(roomNumber, price, available);
+    public NormalRoom(int roomNumber, double price, int numOfBeds) {
+        super(roomNumber, price);
         this.numOfBeds = numOfBeds;
     }
 
@@ -21,8 +21,6 @@ public class NormalRoom extends Room{
 
     @Override
     public String toString() {
-        return "NormalRoom{" +
-                "numOfBeds=" + numOfBeds +
-                '}';
+        return (String.format("%-15d %-15s %-15b %-20d", super.getRoomNumber(),  super.getPrice(),  super.isAvailable(), this.numOfBeds));
     }
 }

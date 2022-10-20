@@ -3,8 +3,8 @@ public class MeetingRoom extends Room{
     private int capacity;
 
     // Constructors
-    public MeetingRoom(int roomNumber, double price, boolean available, int capacity) {
-        super(roomNumber, price, available);
+    public MeetingRoom(int roomNumber, double price, int capacity) {
+        super(roomNumber, price);
         this.capacity = capacity;
     }
 
@@ -19,8 +19,6 @@ public class MeetingRoom extends Room{
 
     @Override
     public String toString() {
-        return "MeetingRoom{" +
-                "capacity=" + capacity +
-                '}';
+        return (String.format("%-15d %-15s %-15b %-20d", super.getRoomNumber(),  super.getPrice(),  super.isAvailable(), this.capacity));
     }
 }

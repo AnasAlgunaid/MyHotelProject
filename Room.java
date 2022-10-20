@@ -8,10 +8,10 @@ public class Room {
     // Constructor
     public Room(){}
 
-    public Room(int roomNumber, double price, boolean available) {
+    public Room(int roomNumber, double price) {
         this.roomNumber = roomNumber;
         this.price = price;
-        this.available = available;
+        this.available = true;
     }
 
     // Getters and setters
