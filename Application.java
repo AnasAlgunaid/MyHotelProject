@@ -122,7 +122,7 @@ public class Application {
 
             case 2:
             {
-                int searchResult = searchCustomer();
+                int searchResult = customerLogin();
                 if(searchResult < 0){
                     System.out.println("Sorry, Customer not found");
                     return;
@@ -142,24 +142,49 @@ public class Application {
         }
         }while(indexOfSelectedRoom < 0);
 
-        // Get the check-out date from the user
-        System.out.println("Please enter the Check-in date");
-        LocalDate check_in = inputDate();
 
-        // Get the check-out date from the user
-        System.out.println("Please enter the Check-out date");
-        LocalDate check_out = inputDate();
 
         // Create the reservation
-        addReservation(customers.get(indexOfCustomer), rooms.get(indexOfSelectedRoom), check_in, check_out);
+        addReservation(customers.get(indexOfCustomer), rooms.get(indexOfSelectedRoom));
 
     }
 
     // Method to create new reservation
-    public static void addReservation(User customer, Room room, LocalDate check_in, LocalDate check_out){
-        reservations.add(new Reservation(((Customer) customer), room, check_in, check_out));
+    public static void addReservation(User customer, Room room){
+        reservations.add(new Reservation(((Customer) customer), room));
+
+        // Store the index of the new reservation
+        int indexOfNewReservation = reservations.size()-1;
+
+        //
+        boolean isItCorrectDate = false;
+
+        // Get the check-in date from the user
+        do{
+            System.out.println("Please enter the Check-in date");
+            isItCorrectDate = reservations.get(indexOfNewReservation).setCheck_in(inputDate());
+            if(!isItCorrectDate){
+                System.out.println("Check-in date can not be in the past .. Please enter a valid date");
+            }
+        }while(!isItCorrectDate);
+
+        // Set the variable back to false to check for check-out date
+        isItCorrectDate = false;
+
+        // Get the check-out date from the user
+        do{
+            System.out.println("Please enter the Check-out date");
+            isItCorrectDate = reservations.get(indexOfNewReservation).setCheck_out(inputDate());
+            if(!isItCorrectDate){
+                System.out.println("Check-out date can not be before Check-in date .. Please enter a valid date");
+            }
+        }while(!isItCorrectDate);
         room.setAvailable(false);
 
+        // Print the bill
+        System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+        System.out.println(reservations.get(reservations.size()-1).toString());
+        System.out.println("-------------------------------------------------------------");
         System.out.println("Reservation created successfully");
     }
 
@@ -187,7 +212,7 @@ public class Application {
     }
 
     // Method to search for a customer by the phone number
-    public static int searchCustomer(){
+    public static int customerLogin(){
         int index = -1;
 
         // Get the phone number from the user to search
@@ -200,11 +225,16 @@ public class Application {
         // Search for the customer by the phone number and return the index
         for(int i = 0; i < customersArraySize; i++){
             if(customers.get(i).getPhoneNumber().equals(phoneNumber)){
-                index = i;
-                return index;
+                // Check for the password
+                System.out.print("Enter the password: ");
+                String password = input.next();
+                if(customers.get(i).getPassword().equals(password)){
+                    index = i;
+                    return index;
+                }
             }
         }
-        System.out.println("THE INDEX IS: " + index);
+
         // If no match return -1
         return index;
     }

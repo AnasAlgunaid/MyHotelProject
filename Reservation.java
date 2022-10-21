@@ -13,13 +13,12 @@ public class Reservation {
     private double totalPrice;
 
     //Constructors
-    public Reservation(Customer customer, Room room, LocalDate check_in, LocalDate check_out) {
+    public Reservation(Customer customer, Room room) {
         this.reservationID = generateReservationID();
         this.customer = customer;
         this.room = room;
-        this.check_in = check_in;
-        this.check_out = check_out;
-        this.totalPrice = calculateTotalPrice();
+        this.check_in = LocalDate.now();
+        this.check_out = LocalDate.now();
     }
 
     // Getters and setters
@@ -53,16 +52,34 @@ public class Reservation {
         return check_in;
     }
 
-    public void setCheck_in(LocalDate check_in) {
-        this.check_in = check_in;
+    public boolean setCheck_in(LocalDate check_in) {
+
+        LocalDate todayDate = LocalDate.now();
+
+        int compareValue = check_in.compareTo(todayDate);
+        if(compareValue >= 0){
+            this.check_in = check_in;
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public LocalDate getCheck_out() {
         return check_out;
     }
 
-    public void setCheck_out(LocalDate check_out) {
-        this.check_out = check_out;
+    public boolean setCheck_out(LocalDate check_out) {
+        if(DAYS.between(this.check_in, check_out) > 0){
+            this.check_out = check_out;
+            this.totalPrice = calculateTotalPrice();
+            return true;
+        }
+        else{
+            return false;
+        }
+
     }
 
     public double getTotalPrice() {
