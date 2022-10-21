@@ -29,8 +29,14 @@ public class ForeignCustomer extends Customer{
 
     // Other methods
 
+    // TODO: 10/21/2022
+//    @Override
+//    public String toString() {
+//        return (String.format("%-15s %-25s %-15s %-15s %-12s %-10d", getID(), (getFirstName() + getLastName()), this.passport, this.country ,getPhoneNumber(), getNumOfReservations()));
+//    }
+
     @Override
     public String toString() {
-        return (String.format("%-15s %-25s %-15s %-15s %-12s %-10d", getID(), (getFirstName() + getLastName()), this.passport, this.country ,getPhoneNumber(), getNumOfReservations()));
+        return (String.format("%-15s %-25s %-15s %-15s %-15s", getID(), (getFirstName() + " " + getLastName()),getPhoneNumber(), this.passport, this.country ));
     }
 }

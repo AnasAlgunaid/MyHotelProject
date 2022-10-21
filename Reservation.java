@@ -18,7 +18,7 @@ public class Reservation {
         this.customer = customer;
         this.room = room;
         this.check_in = LocalDate.now();
-        this.check_out = LocalDate.now();
+        this.check_out = LocalDate.now().plusDays(1);
     }
 
     // Getters and setters
@@ -107,6 +107,29 @@ public class Reservation {
         }
 
         return reservationID;
+    }
+
+    public boolean automaticUpdateAvailability(){
+        LocalDate todayDate = LocalDate.now();
+
+        // If checkout date came, set room available to true
+        if(DAYS.between(this.check_out, todayDate) > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public boolean isPending(){
+        LocalDate todayDate = LocalDate.now();
+
+        if(DAYS.between(todayDate, this.check_out) > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     @Override
