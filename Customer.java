@@ -29,6 +29,6 @@ public class Customer extends User{
 
     @Override
     public String toString() {
-        return (String.format("%-15s %-25s %-15s", getID(), (getFirstName() + " " + getLastName()), getPhoneNumber()));
+        return (String.format("%-15s %-25s %-17s", getID(), (getFirstName() + " " + getLastName()), getPhoneNumber()));
     }
 }

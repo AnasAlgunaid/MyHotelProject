@@ -36,7 +36,7 @@ public class Application {
 
             switch(choice){
                 case 1:
-                    customerMenu();
+                    customersSystem();
                     break;
                 case 2:
                     receptionistMenu();
@@ -64,7 +64,7 @@ public class Application {
         // CHECK_AND_TRY
         return (input.nextInt());
     }
-    public static void customerMenu(){
+    public static void customersSystem(){
         int choice = 0;
         do{
             System.out.println();
@@ -442,7 +442,7 @@ public class Application {
                 for(int i = 0; i < indexesOfRelated.size(); i++){
                     if(reservationID.equals(reservations.get(indexesOfRelated.get(i)).getReservationID())){
                         correctReservationID = true;
-                        System.out.print("are you sure you want to remove the reservation? [yes/no]: ");
+                        System.out.print("are you sure you want to cancel the reservation? [yes/no]: ");
                         if(checkConfirm()){
 
                             // TODO: 10/21/2022 WHAAAAAT
@@ -599,7 +599,7 @@ public class Application {
                     reservationsMenu();
                     break;
                 case 2:
-                    updateReservation();
+                    customersMenu();
                     break;
                 case 3:
                     cancelReservation();
@@ -832,7 +832,190 @@ public static void reservationsMenu(){
         }
     }
 
+    public static void customersMenu(){
+        int choice = 0;
+        do{
+            System.out.println();
+            System.out.println("=============================================================");
+            System.out.println("============== My Hotel System - Customers Menu =============");
+            System.out.println("1- Add new customer                                         +");
+            System.out.println("2- Update customer                                          +");
+            System.out.println("3- Delete customer                                          +");
+            System.out.println("4- Print all customers                                      +");
+            System.out.println("5- Exit                                                     +");
+            System.out.println("-------------------------------------------------------------");
+            System.out.print("Please enter your choice: ");
+
+            // Get the choice from the user
+            choice = input.nextInt();
+            switch(choice){
+                case 1:
+                    newCustomer();
+                    break;
+                case 2:
+                    updateCustomer();
+                    break;
+                case 3:
+                    deleteCustomer();
+                    break;
+                case 4:
+                    displayAllCustomers();
+                case 5:
+                    break;
+                default:
+                    System.out.println("Please enter a valid choice");
+            }
+
+        }while(choice != 5);
+    }
+
+    public static void updateCustomer(){
+        int index = receptionistLogin();
+
+        // Check if the login process is correct
+        if (index < 0){
+            System.out.println("Receptionist not found .. Please try again ");
+            return;
+        }
+
+        System.out.println();
+        System.out.println("-------------------------------------------------------------");
 
 
+        System.out.print("Enter the phone number of customer: ");
+        String phoneNumber = input.next();
+
+        int numOfCustomers = customers.size();
+
+        int customerIndex = -1;
+
+        for(int i = 0; i < numOfCustomers; i++){
+            if(customers.get(i).getPhoneNumber().equals(phoneNumber)){
+                customerIndex = i;
+                break;
+            }
+        }
+
+        if(customerIndex < 0){
+            System.out.println("Customer not found .. Please try again");
+            return;
+        }
+
+        int choice = 0;
+        do{
+            System.out.println();
+            System.out.println("=============================================================");
+            System.out.println("============== My Hotel System - Update Customer ============");
+
+            // Print the information of customer before delete it
+            System.out.printf("%-15s %-25s %-12s \n", "ID", "Full name", "Phone number");
+            System.out.println(customers.get(customerIndex).toString());
+
+            System.out.println("-------------------------------------------------------------");
+            System.out.println("1- Update phone number                                      +");
+            System.out.println("2- Update password                                          +");
+            System.out.println("3- Exit                                                     +");
+            System.out.println("-------------------------------------------------------------");
+
+            // Get the choice from the user
+            System.out.print("Please enter your choice: ");
+            choice = input.nextInt();
+
+            switch(choice){
+                case 1:
+                {
+                    // TODO: 10/22/2022
+                    System.out.print("Enter the new phoneNumber: ");
+                    customers.get(customerIndex).setPhoneNumber(input.next());
+                    if(true){
+                        System.out.println("customer phone number updated successfully");
+                        System.out.println("New number: " + customers.get(customerIndex).getPhoneNumber() + "\n");
+                    }
+                    break;
+                }
+
+                case 2:
+                {
+                    System.out.print("Enter the new password: ");
+                    customers.get(customerIndex).setPassword(input.next());
+                    if(true){
+                        System.out.println("customer password updated successfully");
+                        System.out.println("New password: " + customers.get(customerIndex).getPassword() + "\n");
+                    }
+                    break;
+                }
+
+                case 3:
+                    break;
+                default:
+                    System.out.println("Please enter a valid choice");
+            }
+        }while(choice != 3);
+    }
+
+    public static void deleteCustomer(){
+        int index = receptionistLogin();
+
+        // Check if the login process is correct
+        if (index < 0){
+            System.out.println("Receptionist not found .. Please try again ");
+            return;
+        }
+
+
+        System.out.print("Enter the phone number of customer: ");
+        String phoneNumber = input.next();
+
+        int customerIndex = -1;
+
+        int numOfCustomers = customers.size();
+        for(int i = 0; i < numOfCustomers; i++){
+            if(customers.get(i).getPhoneNumber().equals(phoneNumber)){
+                customerIndex = i;
+                break;
+            }
+        }
+
+        if(customerIndex < 0){
+            System.out.println("Customer not found .. Please try again");
+            return;
+        }
+
+        // Print the information of customer before delete it
+        System.out.printf("%-15s %-25s %-12s \n", "ID", "Full name", "Phone number");
+        System.out.println(customers.get(customerIndex).toString());
+
+
+        System.out.print("are you sure you want to delete the customer? [yes/no]: ");
+        if(checkConfirm()){
+            customers.remove(customerIndex);
+            System.out.println("Customer deleted successfully");
+        }
+
+    }
+
+    public static void displayAllCustomers(){
+        int index = receptionistLogin();
+        if(index < 0){
+            System.out.println("Receptionist not found .. Please try again ");
+            return;
+        }
+        int numOfCustomers = customers.size();
+
+        if(numOfCustomers == 0){
+            System.out.println("Sorry, there are no customers");
+            return;
+        }
+
+        System.out.println();
+        System.out.println("=============================================================");
+        System.out.println("============== My Hotel System - Customers report ===========");
+        System.out.printf("%-15s %-25s %-17s %-15s \n", "ID", "Full name", "Phone number", "Reservations");
+        for(int i = 0; i < numOfCustomers; i++){
+            System.out.print(customers.get(i).toString());
+            System.out.printf(" %-15d\n", ((Customer) customers.get(i)).getNumOfReservations());
+        }
+
+    }
 
 } // End of application class

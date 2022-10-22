@@ -19,6 +19,6 @@ public class MeetingRoom extends Room{
 
     @Override
     public String toString() {
-        return (String.format("%-15d %-15s %-15b %-20d", super.getRoomNumber(),  super.getPrice(),  super.isAvailable(), this.capacity));
+        return (String.format("%-15d %-15s %-15s %-20d", super.getRoomNumber(),  super.getPrice(),  (super.isAvailable()?"Yes": "No"), this.capacity));
     }
 }
