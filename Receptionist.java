@@ -3,7 +3,7 @@ public class Receptionist extends User{
     private double salary;
 
     // Constructors
-    public Receptionist(String firstName, String lastName, String phoneNumber, String password, String userName, double salary) {
+    public Receptionist(String firstName, String lastName, String phoneNumber, String password, double salary) {
         super(firstName, lastName, phoneNumber, password);
         this.salary = salary;
     }
