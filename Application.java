@@ -19,6 +19,8 @@ public class Application {
     // Declare an ArrayList of receptionist
     static ArrayList<Receptionist> receptionists = new ArrayList<>();
 
+    static String adminUser = "admin";
+    static String adminPassword = "admin";
 
     public static void main(String[] args) {
 
@@ -42,14 +44,19 @@ public class Application {
                 case 2:
                     receptionistSystem();
                     break;
+
                 case 3:
+                    controlPanel();
+                    break;
+
+                case 4:
                     System.out.println("Thank your for using the program .. GoodBey");
                     break;
                 default:
                     System.out.println("Please enter a valid choice");
             }
 
-        }while(choice != 3);
+        }while(choice != 4);
     }
 
     public static int mainMenu(){
@@ -58,7 +65,8 @@ public class Application {
         System.out.println("====================== My Hotel System ======================");
         System.out.println("1- Customer system                                          +");
         System.out.println("2- Receptionist system                                      +");
-        System.out.println("3- Exit                                                     +");
+        System.out.println("3- Control Panel                                            +");
+        System.out.println("4- Exit                                                     +");
         System.out.println("-------------------------------------------------------------");
         System.out.print("Please enter your choice: ");
 
@@ -949,7 +957,7 @@ public static void reservationsMenu(){
 
     public static void deleteCustomer(){
 
-        System.out.print("Enter the phone number of customer: ");
+        System.out.print("Enter user's phone number: ");
         String phoneNumber = input.next();
 
         int customerIndex = -1;
@@ -1266,6 +1274,129 @@ public static void reservationsMenu(){
 
             default:
                 System.out.println("Please enter a valid choice");
+        }
+
+    }
+
+    public static void controlPanel(){
+        int index = -1;
+
+        System.out.println();
+        System.out.println("=================== Control Panel - Login ===================");
+
+        // Get the username
+        System.out.print("Enter the username: ");
+        String username = input.next();
+
+        // Get the password
+        System.out.print("Enter the password: ");
+        String password = input.next();
+
+        // Check if the information is correct
+        if(!(username.equals(adminUser) && password.equals(adminPassword))){
+            System.out.println("The username or password you entered isn’t correct.\n");
+            return;
+        }
+
+        int choice = -1;
+        do{
+            System.out.println();
+            System.out.println("======================= Control Panel =======================");
+            System.out.println("1- Add new receptionist                                     +");
+            System.out.println("2- Update exist receptionist                                +");
+            System.out.println("3- Delete receptionist                                      +");
+            System.out.println("4- Exit                                                     +");
+            System.out.println("-------------------------------------------------------------");
+
+            // Get the choice
+            System.out.print("Please enter your choice: ");
+            choice = input.nextInt();
+
+            switch(choice){
+                case 1:
+                {
+                    receptionists.add(receptionistInfo());
+
+                    System.out.println("---------+ Receptionist has been added successfully +--------");
+                    break;
+                }
+                case 2:
+                {
+                    System.out.print("Enter receptionist's phone number: ");
+                    String phoneNumber = input.next();
+
+                    int numOfReceptionists = receptionists.size();
+                    for(int i = 0; i < numOfReceptionists; i++){
+                        if(receptionists.get(i).getPhoneNumber().equals(phoneNumber)){
+
+                            // Display receptionist's name before update it
+                            System.out.println("--------- Update receptionist: " + receptionists.get(i).printFullName() + "---------");
+
+                            // Update the receptionist
+                            receptionists.set(i, receptionistInfo());
+                            System.out.println("--------- Receptionist has been updated successfully --------");
+                            break;
+                        }
+                    }
+                    break;
+                }
+
+                case 3:
+                {
+                    deleteReceptionist();
+                }
+
+            }
+        }while(choice != 4);
+
+    }
+
+    public static Receptionist receptionistInfo(){
+        // Get the information of new receptionist.
+        System.out.print("Enter the first name: ");
+        String firstName = input.next();
+        System.out.print("Enter the last name: ");
+        String lastName = input.next();
+        System.out.print("Enter the phone number: ");
+        String phoneNumber = input.next();
+        System.out.print("Enter the password: ");
+        String receptionistPassword = input.next();
+        System.out.print("Enter the salary: ");
+        double salary = input.nextDouble();
+
+        return (new Receptionist(firstName, lastName, phoneNumber, receptionistPassword, salary));
+    }
+
+    public static void deleteReceptionist(){
+
+        System.out.print("Enter receptionist's phone number: ");
+        String phoneNumber = input.next();
+
+        int receptionistIndex = -1;
+
+        int numOfReceptionists = receptionists.size();
+        for(int i = 0; i < numOfReceptionists; i++){
+            if(receptionists.get(i).getPhoneNumber().equals(phoneNumber)){
+                receptionistIndex = i;
+                break;
+            }
+        }
+
+        if(receptionistIndex < 0){
+            System.out.println("Receptionist not found .. Please try again");
+            return;
+        }
+
+        // Print the information of Receptionist before delete it
+
+        System.out.printf("%-15s %-25s %-12s %-10s \n", "ID", "Full name", "Phone number", "Salary");
+        System.out.println(receptionists.get(receptionistIndex).toString());
+
+
+        System.out.print("are you sure you want to delete the receptionist? [yes/no]: ");
+        if(checkConfirm()){
+            receptionists.remove(receptionistIndex);
+            System.out.println("Receptionist deleted successfully");
         }
 
     }
