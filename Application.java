@@ -19,6 +19,7 @@ public class Application {
     // Declare an ArrayList of receptionist
     static ArrayList<Receptionist> receptionists = new ArrayList<>();
 
+
     public static void main(String[] args) {
 
         rooms.add(new MeetingRoom(113, 250, 12));
@@ -39,7 +40,7 @@ public class Application {
                     customersSystem();
                     break;
                 case 2:
-                    receptionistMenu();
+                    receptionistSystem();
                     break;
                 case 3:
                     System.out.println("Thank your for using the program .. GoodBey");
@@ -134,6 +135,11 @@ public class Application {
 
             case 2:
             {
+                if(customers.size() == 0){
+                    System.out.println("Sorry there are no customers");
+                    return;
+                }
+
                 int searchResult = customerLogin();
                 if(searchResult < 0){
                     System.out.println("Sorry, Customer not found");
@@ -208,10 +214,15 @@ public class Application {
     public static void newCustomer(){
         System.out.println();
         System.out.println("============= My Hotel System - New Account =============");
-        System.out.println("1- Citizen ");
-        System.out.println("2- Resident ");
-        System.out.print("Enter your choice: ");
-        int isCitizen = input.nextInt();
+
+        int isCitizen;
+        do{
+            System.out.println("1- Citizen ");
+            System.out.println("2- Resident ");
+            System.out.print("Enter your choice: ");
+            isCitizen = input.nextInt();
+        }while(isCitizen != 1 && isCitizen != 2);
+
         // Get the personal information from the user.
         System.out.print("Enter the first name: ");
         String firstName = input.next();
@@ -246,10 +257,6 @@ public class Application {
             System.out.printf("%-15s %-25s %-15s %-15s %-15s\n", "ID", "Full name", "Phone number", "Passport", "Country");
             System.out.println(customers.get(customers.size()-1).toString());
 
-        }
-        else{
-            System.out.println("Invalid choice .. Please try again");
-            return;
         }
 
         // Success message
@@ -303,14 +310,14 @@ public class Application {
             switch(choice){
                 case 1:
                 {
-                    displayNormalRooms();
+                    displayAvailableNormalRooms();
                     selectedRoom = searchRoom();
                     break;
                 }
 
                 case 2:
                 {
-                    displayMeetingRooms();
+                    displayAvailableMeetingRooms();
                     selectedRoom = searchRoom();
                     break;
                 }
@@ -507,7 +514,7 @@ public class Application {
 
     // =================================== Methods ============================
 
-    public static void displayNormalRooms(){
+    public static void displayAvailableNormalRooms(){
         // Get the number of rooms
         int roomsArraySize = rooms.size();
 
@@ -523,7 +530,7 @@ public class Application {
 
     }
 
-    public static void displayMeetingRooms(){
+    public static void displayAvailableMeetingRooms(){
         // Get the number of rooms
         int roomsArraySize = rooms.size();
 
@@ -578,11 +585,21 @@ public class Application {
     }
 
     // ========================================================================
-    public static void receptionistMenu(){
+    public static void receptionistSystem(){
+        int index = receptionistLogin();
+        if(index < 0){
+            System.out.println("Receptionist not found .. Please try again");
+            return;
+        }
+
+        else{
+            System.out.println("Welcome " + receptionists.get(index).printFullName());
+        }
+
         int choice = 0;
         do{
             System.out.println();
-            System.out.println("=============================================================");
+            System.out.println("-------------------------------------------------------------");
             System.out.println("============= My Hotel System - Reception Menu ==============");
             System.out.println("1- Reservations                                             +");
             System.out.println("2- Customers                                                +");
@@ -602,7 +619,7 @@ public class Application {
                     customersMenu();
                     break;
                 case 3:
-                    cancelReservation();
+                    roomsMenu();
                     break;
                 case 4:
                     break;
@@ -656,6 +673,8 @@ public static void reservationsMenu(){
     public static int receptionistLogin(){
         int index = -1;
 
+        System.out.println();
+        System.out.println("===================== Receptionist Login ====================");
         // Get the phone number from the receptionist to search
         System.out.print("Enter the phone number: ");
         String phoneNumber = input.next();
@@ -683,68 +702,62 @@ public static void reservationsMenu(){
 
 
     public static void updateReservationByReceptionist(){
-        int index = receptionistLogin();
-        if(index < 0){
-            System.out.println("Receptionist not found .. Please try again");
+
+        // Print all pending reservations
+        ArrayList<Integer> indexesOfPending = displayPendingReservations();
+        int numOfPendingReservations = indexesOfPending.size();
+        System.out.println("-------------------------------------------------------------");
+        boolean isThereReservations = (numOfPendingReservations>0)?true:false;
+        // Check if there are pending reservations
+        if(isThereReservations){
+            System.out.print("Enter the reservation ID: ");
+            String reservationID = input.next();
+
+            boolean correctReservationID = false;
+            for(int i = 0; i < numOfPendingReservations; i++){
+                if(reservationID.equals(reservations.get(indexesOfPending.get(i)).getReservationID())){
+                    correctReservationID = true;
+                    System.out.println("Please enter new dates to update the reservation\n");
+                    boolean isItCorrectDate = false;
+
+                    // TODO: 10/21/2022 Duplicated?
+
+                    // Get the check-in date from the user
+                    do{
+                        System.out.println("Please enter the new check-in date");
+                        isItCorrectDate = reservations.get(indexesOfPending.get(i)).setCheck_in(inputDate());
+                        if(!isItCorrectDate){
+                            System.out.println("Check-in date can not be in the past .. Please enter a valid date");
+                        }
+                    }while(!isItCorrectDate);
+
+                    // Set the variable back to false to check for check-out date
+                    isItCorrectDate = false;
+
+                    // Get the check-out date from the user
+                    do{
+                        System.out.println("Please enter the new check-out date");
+                        isItCorrectDate = reservations.get(indexesOfPending.get(i)).setCheck_out(inputDate());
+                        if(!isItCorrectDate){
+                            System.out.println("Check-out date can not be before Check-in date .. Please enter a valid date");
+                        }
+                    }while(!isItCorrectDate);
+
+                    System.out.println("Reservation updated successfully");
+                    System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+                    System.out.println(reservations.get(indexesOfPending.get(i)).toString());
+                    System.out.println("-------------------------------------------------------------");
+                    break;
+                }
+            }
+            if(!correctReservationID){
+                System.out.println("Invalid reservation ID .. Please try again");
+            }
         }
         else{
-
-            // Print all pending reservations
-            ArrayList<Integer> indexesOfPending = displayPendingReservations();
-            int numOfPendingReservations = indexesOfPending.size();
-            System.out.println("-------------------------------------------------------------");
-            boolean isThereReservations = (numOfPendingReservations>0)?true:false;
-            // Check if there are pending reservations
-            if(isThereReservations){
-                System.out.print("Enter the reservation ID: ");
-                String reservationID = input.next();
-
-                boolean correctReservationID = false;
-                for(int i = 0; i < numOfPendingReservations; i++){
-                    if(reservationID.equals(reservations.get(indexesOfPending.get(i)).getReservationID())){
-                        correctReservationID = true;
-                        System.out.println("Please enter new dates to update the reservation\n");
-                        boolean isItCorrectDate = false;
-
-                        // TODO: 10/21/2022 Duplicated?
-
-                        // Get the check-in date from the user
-                        do{
-                            System.out.println("Please enter the new check-in date");
-                            isItCorrectDate = reservations.get(indexesOfPending.get(i)).setCheck_in(inputDate());
-                            if(!isItCorrectDate){
-                                System.out.println("Check-in date can not be in the past .. Please enter a valid date");
-                            }
-                        }while(!isItCorrectDate);
-
-                        // Set the variable back to false to check for check-out date
-                        isItCorrectDate = false;
-
-                        // Get the check-out date from the user
-                        do{
-                            System.out.println("Please enter the new check-out date");
-                            isItCorrectDate = reservations.get(indexesOfPending.get(i)).setCheck_out(inputDate());
-                            if(!isItCorrectDate){
-                                System.out.println("Check-out date can not be before Check-in date .. Please enter a valid date");
-                            }
-                        }while(!isItCorrectDate);
-
-                        System.out.println("Reservation updated successfully");
-                        System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
-                        System.out.println(reservations.get(indexesOfPending.get(i)).toString());
-                        System.out.println("-------------------------------------------------------------");
-                        break;
-                    }
-                }
-                if(!correctReservationID){
-                    System.out.println("Invalid reservation ID .. Please try again");
-                }
-            }
-            else{
-                System.out.println("Sorry there are no pending reservations");
-            }
-
+            System.out.println("Sorry there are no pending reservations");
         }
+
     }
     public static ArrayList<Integer> displayPendingReservations(){
         int numOfReservations = reservations.size();
@@ -766,58 +779,48 @@ public static void reservationsMenu(){
     }
 
     public static void cancelReservationByReceptionist(){
-        int index = receptionistLogin();
-        if(index < 0){
-            System.out.println("Receptionist not found .. Please try again");
-        }
-        else{
-            int numOfReservations = reservations.size();
 
-            // Print all pending reservations
-            ArrayList<Integer> indexesOfPending = displayPendingReservations();
+        int numOfReservations = reservations.size();
 
-            System.out.println("-------------------------------------------------------------");
-            boolean isThereReservations = (indexesOfPending.size()>0)?true:false;
+        // Print all pending reservations
+        ArrayList<Integer> indexesOfPending = displayPendingReservations();
 
-            System.out.println("-------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------");
+        boolean isThereReservations = (indexesOfPending.size()>0)?true:false;
 
-            // Check if the user has pending and related reservations
-            if(isThereReservations){
-                System.out.print("Enter the reservation ID: ");
-                String reservationID = input.next();
+        System.out.println("-------------------------------------------------------------");
 
-                boolean correctReservationID = false;
-                for(int i = 0; i < indexesOfPending.size(); i++){
-                    if(reservationID.equals(reservations.get(indexesOfPending.get(i)).getReservationID())){
-                        correctReservationID = true;
-                        System.out.print("are you sure you want to remove the reservation? [yes/no]: ");
-                        if(checkConfirm()){
+        // Check if the user has pending and related reservations
+        if(isThereReservations){
+            System.out.print("Enter the reservation ID: ");
+            String reservationID = input.next();
 
-                            // TODO: 10/21/2022 WHAAAAAT
-                            int deletedIndex = indexesOfPending.get(i);
-                            reservations.remove(deletedIndex);
-                            System.out.println("Reservation deleted successfully\n");
-                            return;
-                        }
+            boolean correctReservationID = false;
+            for(int i = 0; i < indexesOfPending.size(); i++){
+                if(reservationID.equals(reservations.get(indexesOfPending.get(i)).getReservationID())){
+                    correctReservationID = true;
+                    System.out.print("are you sure you want to remove the reservation? [yes/no]: ");
+                    if(checkConfirm()){
+
+                        // TODO: 10/21/2022 WHAAAAAT
+                        int deletedIndex = indexesOfPending.get(i);
+                        reservations.remove(deletedIndex);
+                        System.out.println("Reservation deleted successfully\n");
+                        return;
                     }
                 }
-                if(!correctReservationID){
-                    System.out.println("Invalid reservation ID .. Please try again");
-                }
             }
-            else{
-                System.out.println("Sorry there are no pending reservations");
+            if(!correctReservationID){
+                System.out.println("Invalid reservation ID .. Please try again");
             }
-
+        }
+        else{
+            System.out.println("Sorry there are no pending reservations");
         }
     }
 
     public static void displayAllReservations(){
-        int index = receptionistLogin();
-        if(index < 0){
-            System.out.println("Receptionist not found .. Please try again ");
-            return;
-        }
+
         int numOfReservations = reservations.size();
 
         if(numOfReservations == 0){
@@ -870,18 +873,9 @@ public static void reservationsMenu(){
     }
 
     public static void updateCustomer(){
-        int index = receptionistLogin();
-
-        // Check if the login process is correct
-        if (index < 0){
-            System.out.println("Receptionist not found .. Please try again ");
-            return;
-        }
 
         System.out.println();
         System.out.println("-------------------------------------------------------------");
-
-
         System.out.print("Enter the phone number of customer: ");
         String phoneNumber = input.next();
 
@@ -954,14 +948,6 @@ public static void reservationsMenu(){
     }
 
     public static void deleteCustomer(){
-        int index = receptionistLogin();
-
-        // Check if the login process is correct
-        if (index < 0){
-            System.out.println("Receptionist not found .. Please try again ");
-            return;
-        }
-
 
         System.out.print("Enter the phone number of customer: ");
         String phoneNumber = input.next();
@@ -995,11 +981,7 @@ public static void reservationsMenu(){
     }
 
     public static void displayAllCustomers(){
-        int index = receptionistLogin();
-        if(index < 0){
-            System.out.println("Receptionist not found .. Please try again ");
-            return;
-        }
+
         int numOfCustomers = customers.size();
 
         if(numOfCustomers == 0){
@@ -1014,6 +996,276 @@ public static void reservationsMenu(){
         for(int i = 0; i < numOfCustomers; i++){
             System.out.print(customers.get(i).toString());
             System.out.printf(" %-15d\n", ((Customer) customers.get(i)).getNumOfReservations());
+        }
+
+    }
+
+    public static void roomsMenu(){
+        int choice = 0;
+        do{
+            System.out.println();
+            System.out.println("=============================================================");
+            System.out.println("================ My Hotel System - Rooms Menu ===============");
+            System.out.println("1- Add new room                                             +");
+            System.out.println("2- Update room                                              +");
+            System.out.println("3- Delete room                                              +");
+            System.out.println("4- Print all rooms                                          +");
+            System.out.println("5- Exit                                                     +");
+            System.out.println("-------------------------------------------------------------");
+            System.out.print("Please enter your choice: ");
+
+            // Get the choice from the user
+            choice = input.nextInt();
+            switch(choice){
+                case 1:
+                    newRoom();
+                    break;
+                case 2:
+                    updateRoom();
+                    break;
+                case 3:
+                    deleteRoom();
+                    break;
+                case 4:
+                    displayAllRooms();
+                case 5:
+                    break;
+                default:
+                    System.out.println("Please enter a valid choice");
+            }
+
+        }while(choice != 5);
+    }
+
+    public static void newRoom() {
+        System.out.println();
+        System.out.println("============== My Hotel System - New Room ===============");
+
+        int roomType;
+        do{
+            System.out.println("1- Normal room ");
+            System.out.println("2- Meeting room ");
+            System.out.print("Enter your choice: ");
+            roomType = input.nextInt();
+        }while(roomType != 1 && roomType != 2);
+
+        System.out.print("Enter room number: ");
+        int roomNumber = input.nextInt();
+
+        System.out.print("Enter the price: ");
+        double roomPrice = input.nextDouble();
+
+        if(roomType == 1){
+            System.out.print("Enter the number of beds: ");
+            int numOfBeds = input.nextInt();
+
+            rooms.add(new NormalRoom(roomNumber, roomPrice, numOfBeds));
+        }
+        else if(roomType == 2){
+            System.out.print("Enter the capacity (how many persons?): ");
+            int capacity = input.nextInt();
+
+            rooms.add(new MeetingRoom(roomNumber, roomPrice, capacity));
+
+            // Print the new customer information
+            System.out.println("============== My Hotel System - Room information ===========");
+            System.out.printf("%-15s %-15s %-15s %-20s\n", "Room #", "Price", "Available", "Capacity");
+            System.out.println(rooms.get(rooms.size()-1).toString());
+
+        }
+
+        // Success message
+        System.out.println("-------------+ Room has been added successfully +------------");
+    }
+
+    public static void updateRoom(){
+
+        System.out.println();
+        System.out.println("-------------------------------------------------------------");
+
+
+        System.out.print("Enter the room number: ");
+        int roomNum = input.nextInt();
+
+        int numOfRooms = rooms.size();
+
+        int roomIndex = -1;
+
+        for(int i = 0; i < numOfRooms; i++){
+            if(rooms.get(i).getRoomNumber() == (roomNum)){
+                roomIndex = i;
+                break;
+            }
+        }
+
+        if(roomIndex < 0){
+            System.out.println("room not found .. Please try again");
+            return;
+        }
+
+        boolean isItNormalRoom = rooms.get(roomIndex) instanceof NormalRoom;
+        int choice = 0;
+        do{
+            System.out.println();
+            System.out.println("=============================================================");
+            System.out.println("=============== My Hotel System - After updating ============");
+
+            // Print the information of room before update it
+            System.out.printf("%-15s %-15s %-15s %-20s\n", "Room #", "Price", "Available", ((isItNormalRoom)? "Number of beds": "Capacity"));
+            System.out.println(rooms.get(roomIndex).toString());
+
+            System.out.println("-------------------------------------------------------------");
+            System.out.println("1- Update price                                              ");
+            System.out.println("2- Update room number                                        ");
+            System.out.println("3- Update " + ((isItNormalRoom)? "Number of beds": "Capacity"));
+            System.out.println("4- Exit                                                      ");
+            System.out.println("-------------------------------------------------------------");
+
+            // Get the choice from the user
+            System.out.print("Please enter your choice: ");
+            choice = input.nextInt();
+
+            switch(choice){
+                case 1:
+                {
+                    // TODO: 10/22/2022
+                    System.out.print("Enter the new price: ");
+                    rooms.get(roomIndex).setPrice(input.nextDouble());
+
+                    if(true){
+                        System.out.println("room price updated successfully");
+                        System.out.println("New price: " + rooms.get(roomIndex).getPrice() + "\n");
+                    }
+                    break;
+                }
+
+                case 2:
+                {
+                    // TODO: 10/23/2022
+                    System.out.print("Enter the new room number: ");
+                    rooms.get(roomIndex).setRoomNumber(input.nextInt());
+                    if(true){
+                        System.out.println("room number updated successfully");
+                        System.out.println("New room number: " + rooms.get(roomIndex).getRoomNumber() + "\n");
+                    }
+                    break;
+                }
+
+                case 3:
+                {
+                    if(isItNormalRoom){
+                        System.out.print("Enter the new number of beds: ");
+                        ((NormalRoom) rooms.get(roomIndex)).setNumOfBeds(input.nextInt());
+
+                        // TODO: 10/28/2022
+                        if(true){
+                            System.out.println("number of beds updated successfully");
+                            System.out.println("New number of beds: " + ((NormalRoom) rooms.get(roomIndex)).getNumOfBeds() + "\n");
+                        }
+                    }
+                    else {
+                        System.out.print("Enter the new capacity: ");
+                        ((MeetingRoom) rooms.get(roomIndex)).setCapacity(input.nextInt());
+
+                        if(true){
+                            System.out.println("Capacity updated successfully");
+                            System.out.println("New capacity: " + ((MeetingRoom) rooms.get(roomIndex)).getCapacity() + "\n");
+                        }
+                    }
+                }
+                case 4:
+                    break;
+                default:
+                    System.out.println("Please enter a valid choice");
+            }
+        }while(choice != 4);
+    }
+
+    public static void deleteRoom(){
+        System.out.print("Enter the room number: ");
+        int roomNum = input.nextInt();
+
+        int roomIndex = -1;
+
+        int numOfRooms = rooms.size();
+        for(int i = 0; i < numOfRooms; i++){
+            if(rooms.get(i).getRoomNumber() == roomNum){
+                roomIndex = i;
+                break;
+            }
+        }
+
+        if(roomIndex < 0){
+            System.out.println("Room not found .. Please try again");
+            return;
+        }
+
+        boolean isItNormalRoom = rooms.get(roomIndex) instanceof NormalRoom;
+
+        // Print the information of customer before delete it
+        System.out.printf("%-15s %-15s %-15s %-20s\n", "Room #", "Price", "Available", ((isItNormalRoom)? "Number of beds": "Capacity"));
+        System.out.println(rooms.get(roomIndex).toString());
+
+
+        System.out.print("are you sure you want to delete the room? [yes/no]: ");
+        if(checkConfirm()){
+            rooms.remove(roomIndex);
+            System.out.println("Room deleted successfully");
+        }
+
+    }
+
+    public static void displayAllRooms(){
+
+        int numOfRooms = rooms.size();
+
+        if(numOfRooms == 0){
+            System.out.println("Sorry, there are no rooms");
+            return;
+        }
+
+        int choice;
+
+        System.out.println("====================== Choose Room Type =====================");
+        System.out.println("1- Normal Rooms");
+        System.out.println("2- Meeting Rooms");
+        System.out.println("3- Go back");
+        System.out.println("-------------------------------------------------------------");
+
+        // Get the choice from the receptionist
+        System.out.print("Please enter your choice: ");
+        choice = input.nextInt();
+
+        System.out.println();
+
+        switch(choice){
+            case 1:
+            {
+                System.out.println("==================== Normal Rooms Report ====================");
+                System.out.printf("%-15s %-15s %-15s %-20s\n", "Room #", "Price", "Available", "Number of beds");
+                for(int i = 0; i < numOfRooms; i++){
+                    if(rooms.get(i) instanceof NormalRoom){
+                        System.out.println(rooms.get(i).toString());
+                    }
+                }
+                break;
+            }
+
+            case 2:
+            {
+                System.out.println("==================== Meeting Rooms Report ===================");
+                System.out.printf("%-15s %-15s %-15s %-20s\n", "Room #", "Price", "Available", "Capacity");
+                for(int i = 0; i < numOfRooms; i++){
+                    if(rooms.get(i) instanceof MeetingRoom){
+                        System.out.println(rooms.get(i).toString());
+                    }
+                }
+            }
+            case 3:
+                return;
+
+            default:
+                System.out.println("Please enter a valid choice");
         }
 
     }
