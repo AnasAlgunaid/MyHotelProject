@@ -195,8 +195,6 @@ public class Application {
             }
         }while(!isItCorrectDate);
 
-        // Set the variable back to false to check for check-out date
-        isItCorrectDate = false;
 
         // Get the check-out date from the user
         do{
@@ -209,6 +207,10 @@ public class Application {
 
         // If the reservation is created set the room to not available
         room.setAvailable(false);
+
+        // TODO: 10/29/2022
+        // Add a reservation to the customer
+        ((Customer) customer).addReservation();
 
         // Print the bill
         System.out.println("================ My Hotel System - The bill =================");
@@ -271,32 +273,25 @@ public class Application {
         System.out.println("-----+ Customer has been added successfully +-----");
     }
 
-    // Method to search for a customer by the phone number
+    // Method to check for customers login
     public static int customerLogin(){
-        int index = -1;
 
-        // Get the phone number from the user to search
-        System.out.print("Enter the phone number: ");
-        String phoneNumber = input.next();
+        // Search for the index of the customer
+        int index = searchCustomer();
 
-        // Get the number of customers
-        int customersArraySize = customers.size();
-
-        // Search for the customer by the phone number and return the index
-        for(int i = 0; i < customersArraySize; i++){
-            if(customers.get(i).getPhoneNumber().equals(phoneNumber)){
-                // Check for the password
-                System.out.print("Enter the password: ");
-                String password = input.next();
-                if(customers.get(i).getPassword().equals(password)){
-                    index = i;
-                    return index;
-                }
-            }
+        if(index < 0){
+            return -1;
         }
 
-        // If no match return -1
-        return index;
+        // Check for the password
+            System.out.print("Enter the password: ");
+            String password = input.next();
+            if(customers.get(index).getPassword().equals(password)){
+                return index;
+            }
+            else{
+                return -1;
+            }
     }
 
     public static int chooseRoom(){
@@ -339,85 +334,119 @@ public class Application {
         return selectedRoom;
     }
 
+    public static ArrayList<Integer> getCurrentReservations(int index){
+        int numOfReservations = reservations.size();
+        String customerPhoneNumber = customers.get(index).getPhoneNumber();
+
+        ArrayList<Integer> indexesOfRelated = new ArrayList<>();
+
+        boolean isThereReservation = false;
+
+        // Get the related and pending reservations of the customer
+        for (int i = 0; i < numOfReservations; i++) {
+
+            // Check if the reservation related to the customer
+            boolean relatedReservation = reservations.get(i).getCustomer().getPhoneNumber().equals(customerPhoneNumber);
+
+            // Check if the reservation not in the past
+            if (relatedReservation) {
+                if (reservations.get(i).isPending()) {
+                    isThereReservation = true;
+                    indexesOfRelated.add(i);
+                }
+            }
+        }
+
+        return indexesOfRelated;
+    }
+
     // ------------------------- Update exist reservation -------------------------
 
+    public static boolean getDates(Reservation reservation){
+
+        boolean isItCorrectDate = true;
+
+        System.out.println("Please enter the check-in date");
+        isItCorrectDate = reservation.setCheck_in(inputDate());
+        if(!isItCorrectDate){
+            System.out.println("Check-in date can not be in the past .. Please enter a valid date");
+            return false;
+        }
+
+
+        // Get the check-out date from the user
+        System.out.println("Please enter the check-out date");
+        isItCorrectDate = reservation.setCheck_out(inputDate());;
+        if(!isItCorrectDate){
+            System.out.println("Check-out date can not be before Check-in date .. Please enter a valid date");
+            return false;
+        }
+
+        // If the dates are correct return true
+        return true;
+    }
+
+    // TODO: 10/29/2022 Can we merge it? 
     public static void updateReservation(){
         int index = customerLogin();
         if(index < 0){
             System.out.println("Customer not found .. Please try again");
+            return;
         }
-        else{
-            int numOfReservations = reservations.size();
-            String customerPhoneNumber = customers.get(index).getPhoneNumber();
 
-            ArrayList<Integer> indexesOfRelated = new ArrayList<>();
+        // Get the indexes of current reservations
+        ArrayList<Integer> currentReservationsIndexes = getCurrentReservations(index);
 
-            boolean isThereReservations = false;
-            // Print the related and pending reservations of the customer
-            for(int i = 0; i < numOfReservations; i++){
-                boolean relatedReservation = reservations.get(i).getCustomer().getPhoneNumber().equals(customerPhoneNumber);
-                if(relatedReservation){
-                    if(reservations.get(i).isPending()){
-                        isThereReservations = true;
-                        indexesOfRelated.add(i);
-                        System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
-                        System.out.println(reservations.get(i).toString());
-                    }
+        int numOfCurrentReservations = currentReservationsIndexes.size();
+
+        // Check if there are reservations
+        if(numOfCurrentReservations < 1){
+            System.out.println("Sorry there are no current reservations for the customer");
+            return;
+        }
+
+        // Print the related and current reservations of the customer
+
+        for(int i : currentReservationsIndexes){
+            System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+            System.out.println(reservations.get(i).toString());
+        }
+        System.out.println("-------------------------------------------------------------");
+
+        // Get the reservation ID from the customer
+        System.out.print("Enter the reservation ID: ");
+        String reservationID = input.next();
+
+        // Check if the user has current and related reservations
+
+        boolean existReservation = false;
+        for(int i : currentReservationsIndexes) {
+            if(reservations.get(i).getReservationID().equals(reservationID)){
+                existReservation = true;
+                System.out.println("--- Please enter new dates to update the reservation ---\n");
+
+                // If the dates are correct display success message
+                if(getDates(reservations.get(i))){
+                    System.out.println("Reservation updated successfully\n");
+
+                    // Print the reservation after the update
+                    System.out.println("--------------------- After the update ----------------------");
+                    System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+                    System.out.println(reservations.get(i).toString());
+                    break;
+                }
+
+                // If they are not correct end the method
+                else{
+                    return;
                 }
             }
-
-            System.out.println("-------------------------------------------------------------");
-
-            // Check if the user has pending and related reservations
-            if(isThereReservations){
-                System.out.print("Enter the reservation ID: ");
-                String reservationID = input.next();
-
-
-                for(int i = 0; i < indexesOfRelated.size(); i++){
-                    if(reservationID.equals(reservations.get(indexesOfRelated.get(i)).getReservationID())){
-                        System.out.println("Please enter new dates to update the reservation\n");
-                        boolean isItCorrectDate = false;
-
-                        // TODO: 10/21/2022 Duplicated?
-
-                        // Get the check-in date from the user
-                        do{
-                            System.out.println("Please enter the new check-in date");
-                            isItCorrectDate = reservations.get(indexesOfRelated.get(i)).setCheck_in(inputDate());
-                            if(!isItCorrectDate){
-                                System.out.println("Check-in date can not be in the past .. Please enter a valid date");
-                            }
-                        }while(!isItCorrectDate);
-
-                        // Set the variable back to false to check for check-out date
-                        isItCorrectDate = false;
-
-                        // Get the check-out date from the user
-                        do{
-                            System.out.println("Please enter the new check-out date");
-                            isItCorrectDate = reservations.get(indexesOfRelated.get(i)).setCheck_out(inputDate());
-                            if(!isItCorrectDate){
-                                System.out.println("Check-out date can not be before Check-in date .. Please enter a valid date");
-                            }
-                        }while(!isItCorrectDate);
-
-                        System.out.println("Reservation updated successfully");
-                        System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
-                        System.out.println(reservations.get(indexesOfRelated.get(i)).toString());
-                        System.out.println("-------------------------------------------------------------");
-                        break;
-                    }
-                    else{
-                        System.out.println("Invalid reservation ID .. Please try again");
-                    }
-                }
-            }
-            else{
-                System.out.println("Sorry there is no pending reservations");
-            }
-
         }
+
+        if(!existReservation){
+            System.out.println("Reservation not found .. Please try again");
+        }
+
     }
 
     // ------------------------- Cancel reservation -------------------------
@@ -425,58 +454,59 @@ public class Application {
         int index = customerLogin();
         if(index < 0){
             System.out.println("Customer not found .. Please try again");
+            return;
+        }
+
+        int numOfReservations = reservations.size();
+        String customerPhoneNumber = customers.get(index).getPhoneNumber();
+
+        ArrayList<Integer> indexesOfRelated = new ArrayList<>();
+
+        boolean isThereReservations = false;
+
+        // Print the related and pending reservations of the customer
+        for(int i = 0; i < numOfReservations; i++){
+            boolean relatedReservation = reservations.get(i).getCustomer().getPhoneNumber().equals(customerPhoneNumber);
+            if(relatedReservation){
+                if(reservations.get(i).isPending()){
+                    isThereReservations = true;
+                    indexesOfRelated.add(i);
+                    System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+                    System.out.println(reservations.get(i).toString());
+                }
+            }
+        }
+
+        System.out.println("-------------------------------------------------------------");
+
+        // Check if the user has pending and related reservations
+        if(isThereReservations){
+            System.out.print("Enter the reservation ID: ");
+            String reservationID = input.next();
+
+            boolean correctReservationID = false;
+            for(int i = 0; i < indexesOfRelated.size(); i++){
+                if(reservationID.equals(reservations.get(indexesOfRelated.get(i)).getReservationID())){
+                    correctReservationID = true;
+                    System.out.print("are you sure you want to cancel the reservation? [yes/no]: ");
+                    if(checkConfirm()){
+
+                        // TODO: 10/21/2022 WHAAAAAT
+                        int deletedIndex = indexesOfRelated.get(i);
+                        reservations.remove(deletedIndex);
+                        System.out.println("Reservation deleted successfully\n");
+                        return;
+                    }
+                }
+            }
+            if(!correctReservationID){
+                System.out.println("Invalid reservation ID .. Please try again");
+            }
         }
         else{
-            int numOfReservations = reservations.size();
-            String customerPhoneNumber = customers.get(index).getPhoneNumber();
-
-            ArrayList<Integer> indexesOfRelated = new ArrayList<>();
-
-            boolean isThereReservations = false;
-            // Print the related and pending reservations of the customer
-            for(int i = 0; i < numOfReservations; i++){
-                boolean relatedReservation = reservations.get(i).getCustomer().getPhoneNumber().equals(customerPhoneNumber);
-                if(relatedReservation){
-                    if(reservations.get(i).isPending()){
-                        isThereReservations = true;
-                        indexesOfRelated.add(i);
-                        System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
-                        System.out.println(reservations.get(i).toString());
-                    }
-                }
-            }
-
-            System.out.println("-------------------------------------------------------------");
-
-            // Check if the user has pending and related reservations
-            if(isThereReservations){
-                System.out.print("Enter the reservation ID: ");
-                String reservationID = input.next();
-
-                boolean correctReservationID = false;
-                for(int i = 0; i < indexesOfRelated.size(); i++){
-                    if(reservationID.equals(reservations.get(indexesOfRelated.get(i)).getReservationID())){
-                        correctReservationID = true;
-                        System.out.print("are you sure you want to cancel the reservation? [yes/no]: ");
-                        if(checkConfirm()){
-
-                            // TODO: 10/21/2022 WHAAAAAT
-                            int deletedIndex = indexesOfRelated.get(i);
-                            reservations.remove(deletedIndex);
-                            System.out.println("Reservation deleted successfully\n");
-                            return;
-                        }
-                    }
-                }
-                if(!correctReservationID){
-                    System.out.println("Invalid reservation ID .. Please try again");
-                }
-            }
-            else{
-                System.out.println("Sorry there is no pending reservations");
-            }
-
+            System.out.println("Sorry there is no pending reservations");
         }
+
     }
 
     // ------------------------ Old reservations ------------------------
@@ -711,79 +741,68 @@ public static void reservationsMenu(){
 
     public static void updateReservationByReceptionist(){
 
-        // Print all pending reservations
-        ArrayList<Integer> indexesOfPending = displayPendingReservations();
-        int numOfPendingReservations = indexesOfPending.size();
+        // Print all current reservations
+        ArrayList<Integer> indexesOfCurrent = getCurrentReservations();
+
+        int numOfCurrentReservations = indexesOfCurrent.size();
+
+        // Check if there are reservations
+        if(numOfCurrentReservations < 1){
+            System.out.println("Sorry there are no current reservations for the customer");
+            return;
+        }
+
         System.out.println("-------------------------------------------------------------");
-        boolean isThereReservations = (numOfPendingReservations>0)?true:false;
-        // Check if there are pending reservations
-        if(isThereReservations){
-            System.out.print("Enter the reservation ID: ");
-            String reservationID = input.next();
 
-            boolean correctReservationID = false;
-            for(int i = 0; i < numOfPendingReservations; i++){
-                if(reservationID.equals(reservations.get(indexesOfPending.get(i)).getReservationID())){
-                    correctReservationID = true;
-                    System.out.println("Please enter new dates to update the reservation\n");
-                    boolean isItCorrectDate = false;
+        System.out.print("Enter the reservation ID: ");
+        String reservationID = input.next();
 
-                    // TODO: 10/21/2022 Duplicated?
+        boolean existReservation = false;
+        for(int i : indexesOfCurrent){
+            if(reservationID.equals(reservations.get(i).getReservationID())){
+                existReservation = true;
 
-                    // Get the check-in date from the user
-                    do{
-                        System.out.println("Please enter the new check-in date");
-                        isItCorrectDate = reservations.get(indexesOfPending.get(i)).setCheck_in(inputDate());
-                        if(!isItCorrectDate){
-                            System.out.println("Check-in date can not be in the past .. Please enter a valid date");
-                        }
-                    }while(!isItCorrectDate);
+                System.out.println("--- Please enter new dates to update the reservation ---\n");
 
-                    // Set the variable back to false to check for check-out date
-                    isItCorrectDate = false;
+                // If the dates are correct display success message
+                if(getDates(reservations.get(i))){
+                    System.out.println("Reservation updated successfully\n");
 
-                    // Get the check-out date from the user
-                    do{
-                        System.out.println("Please enter the new check-out date");
-                        isItCorrectDate = reservations.get(indexesOfPending.get(i)).setCheck_out(inputDate());
-                        if(!isItCorrectDate){
-                            System.out.println("Check-out date can not be before Check-in date .. Please enter a valid date");
-                        }
-                    }while(!isItCorrectDate);
-
-                    System.out.println("Reservation updated successfully");
+                    // Print the reservation after the update
+                    System.out.println("--------------------- After the update ----------------------");
                     System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
-                    System.out.println(reservations.get(indexesOfPending.get(i)).toString());
-                    System.out.println("-------------------------------------------------------------");
+                    System.out.println(reservations.get(i).toString());
                     break;
                 }
+
+                // If they are not correct end the method
+                else{
+                    return;
+                }
             }
-            if(!correctReservationID){
-                System.out.println("Invalid reservation ID .. Please try again");
-            }
-        }
-        else{
-            System.out.println("Sorry there are no pending reservations");
         }
 
+        if(!existReservation){
+            System.out.println("Reservation not found .. Please try again");
+        }
     }
-    public static ArrayList<Integer> displayPendingReservations(){
+    public static ArrayList<Integer> getCurrentReservations(){
         int numOfReservations = reservations.size();
 
         boolean isThereReservations = false;
-        ArrayList<Integer> indexesOfPending = new ArrayList<>();
+        ArrayList<Integer> indexesOfCurrent = new ArrayList<>();
 
         // Print all pending reservations
         for(int i = 0; i < numOfReservations; i++){
             if(reservations.get(i).isPending()){
                 isThereReservations = true;
-                indexesOfPending.add(i);
+                indexesOfCurrent.add(i);
                 System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
                 System.out.println(reservations.get(i).toString());
             }
         }
 
-        return indexesOfPending;
+        return indexesOfCurrent;
     }
 
     public static void cancelReservationByReceptionist(){
@@ -791,7 +810,7 @@ public static void reservationsMenu(){
         int numOfReservations = reservations.size();
 
         // Print all pending reservations
-        ArrayList<Integer> indexesOfPending = displayPendingReservations();
+        ArrayList<Integer> indexesOfPending = getCurrentReservations();
 
         System.out.println("-------------------------------------------------------------");
         boolean isThereReservations = (indexesOfPending.size()>0)?true:false;
@@ -880,23 +899,31 @@ public static void reservationsMenu(){
         }while(choice != 5);
     }
 
-    public static void updateCustomer(){
+    // Method to search for a customer
+    public static int searchCustomer(){
 
-        System.out.println();
-        System.out.println("-------------------------------------------------------------");
-        System.out.print("Enter the phone number of customer: ");
+        // Get the phone number from the user
+        System.out.print("Please enter customer's phone number: ");
         String phoneNumber = input.next();
 
+        // Default value if there is no match
+        int index = -1;
+
+        // Search for the customer by his phone number
         int numOfCustomers = customers.size();
-
-        int customerIndex = -1;
-
         for(int i = 0; i < numOfCustomers; i++){
             if(customers.get(i).getPhoneNumber().equals(phoneNumber)){
-                customerIndex = i;
+                index = i;
                 break;
             }
         }
+
+        return index;
+    }
+
+    public static void updateCustomer(){
+
+        int customerIndex = searchCustomer();
 
         if(customerIndex < 0){
             System.out.println("Customer not found .. Please try again");
@@ -927,7 +954,7 @@ public static void reservationsMenu(){
                 case 1:
                 {
                     // TODO: 10/22/2022
-                    System.out.print("Enter the new phoneNumber: ");
+                    System.out.print("Enter the new phone number: ");
                     customers.get(customerIndex).setPhoneNumber(input.next());
                     if(true){
                         System.out.println("customer phone number updated successfully");
@@ -957,19 +984,10 @@ public static void reservationsMenu(){
 
     public static void deleteCustomer(){
 
-        System.out.print("Enter user's phone number: ");
-        String phoneNumber = input.next();
+        // Search for a specific customer by phone number
+        int customerIndex = searchCustomer();
 
-        int customerIndex = -1;
-
-        int numOfCustomers = customers.size();
-        for(int i = 0; i < numOfCustomers; i++){
-            if(customers.get(i).getPhoneNumber().equals(phoneNumber)){
-                customerIndex = i;
-                break;
-            }
-        }
-
+        // Check if there is a match
         if(customerIndex < 0){
             System.out.println("Customer not found .. Please try again");
             return;
