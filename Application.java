@@ -73,17 +73,69 @@ public class Application {
         // CHECK_AND_TRY
         return (input.nextInt());
     }
+
+    public static int customerLoginMenu(){
+
+        int choice;
+        do{
+            System.out.println("========================= Login Menu ========================");
+            System.out.println("1- Sign in                                                  +");
+            System.out.println("2- Sign up                                                  +");
+            System.out.println("3- Exit                                                     +");
+            System.out.println("-------------------------------------------------------------");
+
+            // Get the choice from the user
+            System.out.print("Please enter your choice: ");
+            choice = input.nextInt();
+
+            int customerIndex;
+            switch(choice){
+                case 1:
+                {
+                    customerIndex = customerLogin();
+                    if(customerIndex < 0){
+                        System.out.println("Customer not found .. Please try again\n");
+                        break;
+                    }
+                    return customerIndex;
+                }
+                case 2:
+                {
+                    if(newCustomer()){
+                        // Return the index of the new user
+                        return (customers.size()-1);
+                    }
+                    break;
+                }
+
+                case 3:
+                    break;
+
+                default:
+                    System.out.println("Please enter a valid choice");
+            }
+        }while(choice != 3);
+
+        return -1;
+    }
+
     public static void customersSystem(){
+        int customerIndex = customerLoginMenu();
+
+        if(customerIndex < 0){
+            return;
+        }
+
         int choice = 0;
         do{
             System.out.println();
-            System.out.println("=============================================================");
+            System.out.println("Welcome: " + customers.get(customerIndex).printFullName() + "\n");
             System.out.println("============== My Hotel System - Customer Menu ==============");
             System.out.println("1- New reservation                                          +");
             System.out.println("2- Update exist reservation                                 +");
             System.out.println("3- Cancel reservation                                       +");
-            System.out.println("4- Old reservations                                        +");
-            System.out.println("5- Exit                                                     +");
+            System.out.println("4- Old reservations                                         +");
+            System.out.println("5- Log out                                                  +");
             System.out.println("-------------------------------------------------------------");
             System.out.print("Please enter your choice: ");
 
@@ -92,16 +144,16 @@ public class Application {
 
             switch(choice){
                 case 1:
-                    newReservation();
+                    newReservation(customerIndex);
                     break;
                 case 2:
-                    updateReservation();
+                    updateReservation(customerIndex);
                     break;
                 case 3:
-                    cancelReservation();
+                    cancelReservation(customerIndex);
                     break;
                 case 4:
-                    displayOldReservations();
+                    displayOldReservations(customerIndex);
                 case 5:
                     break;
                 default:
@@ -111,68 +163,70 @@ public class Application {
         }while(choice != 5);
     }
 
-    public static void newReservation(){
+    public static void newReservation(int customerIndex){
         // If there are no rooms
         if(rooms.size() == 0){
             System.out.println("Sorry, there are no rooms");
             return;
         }
 
-
         int indexOfSelectedRoom = -1;
-        int indexOfCustomer = -1;
-        do{
+
         System.out.println();
         System.out.println("============= My Hotel System - New Reservation =============");
-        System.out.println("1- New customer                                             +");
-        System.out.println("2- Exist customer                                           +");
-        System.out.println("3- Go Back                                                  +");
-        System.out.println("-------------------------------------------------------------");
 
-        //TRY_AND_CHECK
-        // Get the choice from the user
-        System.out.print("Please enter your choice: ");
-        int choice = input.nextInt();
+        indexOfSelectedRoom = chooseRoom();
 
-        switch(choice){
-            case 1:
-                newCustomer();
-                indexOfCustomer = customers.size() -1;
-                indexOfSelectedRoom = chooseRoom();
-                break;
-
-            case 2:
-            {
-                if(customers.size() == 0){
-                    System.out.println("Sorry there are no customers");
-                    return;
-                }
-
-                int searchResult = customerLogin();
-                if(searchResult < 0){
-                    System.out.println("Sorry, Customer not found");
-                    return;
-                }
-                else{
-                    indexOfCustomer = searchResult;
-                    indexOfSelectedRoom = chooseRoom();
-                    break;
-                }
-            }
-
-            case 3:
-                return;
-
-            default:
-                System.out.println("Please enter a valid choice");
+        // If the user choose to go back
+        if(indexOfSelectedRoom < 0){
+            return;
         }
-        }while(indexOfSelectedRoom < 0);
-
-
 
         // Create the reservation
-        addReservation(customers.get(indexOfCustomer), rooms.get(indexOfSelectedRoom));
+        addReservation(customers.get(customerIndex), rooms.get(indexOfSelectedRoom));
 
+    }
+
+    public static int chooseRoom(){
+
+        int choice;
+        do{
+            System.out.println();
+            System.out.println("================== Step [1/2]: Choose room ==================");
+            System.out.println("1- Normal Room                                              +");
+            System.out.println("2- Meeting Room                                             +");
+            System.out.println("3- Go back                                                  +");
+            System.out.println("-------------------------------------------------------------");
+
+            // Get the choice from the user
+            System.out.print("Please enter your choice: ");
+            choice = input.nextInt();
+
+            switch(choice){
+                case 1:
+                {
+                    displayAvailableNormalRooms();
+                    break;
+                }
+
+                case 2:
+                {
+                    displayAvailableMeetingRooms();
+                    break;
+                }
+
+                case 3:
+                {
+                    return -1;
+                }
+                default:
+                    System.out.println("Please enter a valid choice");
+            }
+        }while(choice < 0 && choice > 3);
+
+        int selectedRoom = searchRoom();
+
+        return selectedRoom;
     }
 
     // Method to create new reservation
@@ -182,30 +236,14 @@ public class Application {
         // Store the index of the new reservation
         int indexOfNewReservation = reservations.size()-1;
 
-        //
         boolean isItCorrectDate = false;
 
-        // TODO: 10/21/2022 Duplicated?
-        // Get the check-in date from the user
-        do{
-            System.out.println("Please enter the Check-in date");
-            isItCorrectDate = reservations.get(indexOfNewReservation).setCheck_in(inputDate());
-            if(!isItCorrectDate){
-                System.out.println("Check-in date can not be in the past .. Please enter a valid date");
-            }
-        }while(!isItCorrectDate);
+        System.out.println("================== Step [2/2]: Enter dates ==================");
 
+        // Get the check-in and check-out date
+        getDates(reservations.get(indexOfNewReservation));
 
-        // Get the check-out date from the user
-        do{
-            System.out.println("Please enter the Check-out date");
-            isItCorrectDate = reservations.get(indexOfNewReservation).setCheck_out(inputDate());
-            if(!isItCorrectDate){
-                System.out.println("Check-out date can not be before Check-in date .. Please enter a valid date");
-            }
-        }while(!isItCorrectDate);
-
-        // If the reservation is created set the room to not available
+        // Set the room to not available
         room.setAvailable(false);
 
         // TODO: 10/29/2022
@@ -221,16 +259,22 @@ public class Application {
     }
 
     // Method to Create a new account for a customer
-    public static void newCustomer(){
+    public static boolean newCustomer(){
         System.out.println();
         System.out.println("============= My Hotel System - New Account =============");
 
         int isCitizen;
         do{
-            System.out.println("1- Citizen ");
-            System.out.println("2- Resident ");
+            System.out.println("1- Citizen                                              +");
+            System.out.println("2- Resident                                             +");
+            System.out.println("3- Go back                                              +");
             System.out.print("Enter your choice: ");
             isCitizen = input.nextInt();
+
+            // Go back
+            if(isCitizen == 3){
+                return false;
+            }
         }while(isCitizen != 1 && isCitizen != 2);
 
         // Get the personal information from the user.
@@ -240,9 +284,20 @@ public class Application {
         String lastName = input.next();
         System.out.print("Enter the phone number: ");
         String phoneNumber = input.next();
+
+        // Check if the phone number is already exists
+        int numOfCustomers = customers.size();
+        for(int i = 0; i < numOfCustomers; i++){
+            if(phoneNumber.equals(customers.get(i).getPhoneNumber())){
+                System.out.println("The phone number is already exists .. You can sign in");
+                return false;
+            }
+        }
+
         System.out.print("Enter the password: ");
         String password = input.next();
 
+        // Citizen customer
         if(isCitizen == 1){
             // Store the customer
             customers.add(new Customer(firstName, lastName, phoneNumber, password));
@@ -253,6 +308,8 @@ public class Application {
             System.out.println(customers.get(customers.size()-1).toString());
 
         }
+
+        // Resident customer
         else if(isCitizen == 2){
             System.out.print("Enter the country: ");
             String country = input.next();
@@ -270,7 +327,8 @@ public class Application {
         }
 
         // Success message
-        System.out.println("-----+ Customer has been added successfully +-----");
+        System.out.println("-----+ Account successfully created +-----");
+        return true;
     }
 
     // Method to check for customers login
@@ -294,45 +352,7 @@ public class Application {
             }
     }
 
-    public static int chooseRoom(){
 
-        // No match value
-        int selectedRoom = -1;
-
-        do{
-            System.out.println();
-            System.out.println("=============== My Hotel System - Choose room ===============");
-            System.out.println("1- Normal Room");
-            System.out.println("2- Meeting Room");
-            System.out.println("-------------------------------------------------------------");
-
-            // Get the choice from the user
-            System.out.print("Please enter your choice: ");
-            int choice = input.nextInt();
-
-            switch(choice){
-                case 1:
-                {
-                    displayAvailableNormalRooms();
-                    selectedRoom = searchRoom();
-                    break;
-                }
-
-                case 2:
-                {
-                    displayAvailableMeetingRooms();
-                    selectedRoom = searchRoom();
-                    break;
-                }
-
-                default:
-                    System.out.println("Please enter a valid choice");
-            }
-        }while(selectedRoom < 0);
-
-
-        return selectedRoom;
-    }
 
     public static ArrayList<Integer> getCurrentReservations(int index){
         int numOfReservations = reservations.size();
@@ -342,7 +362,7 @@ public class Application {
 
         boolean isThereReservation = false;
 
-        // Get the related and pending reservations of the customer
+        // Get the related and current reservations of the customer
         for (int i = 0; i < numOfReservations; i++) {
 
             // Check if the reservation related to the customer
@@ -362,40 +382,34 @@ public class Application {
 
     // ------------------------- Update exist reservation -------------------------
 
-    public static boolean getDates(Reservation reservation){
+    public static void getDates(Reservation reservation){
 
-        boolean isItCorrectDate = true;
+        boolean isItCorrectDate = false;
 
-        System.out.println("Please enter the check-in date");
-        isItCorrectDate = reservation.setCheck_in(inputDate());
-        if(!isItCorrectDate){
-            System.out.println("Check-in date can not be in the past .. Please enter a valid date");
-            return false;
-        }
+        do{
+            System.out.println("Please enter the check-in date");
+            isItCorrectDate = reservation.setCheck_in(inputDate());
+            if(!isItCorrectDate){
+                System.out.println("Check-in date can not be in the past .. Please enter a valid date\n");
+                continue;
+            }
 
+            // Get the check-out date from the user
+            System.out.println("Please enter the check-out date");
+            isItCorrectDate = reservation.setCheck_out(inputDate());
+            if(!isItCorrectDate){
+                System.out.println("Check-out date can not be before Check-in date .. Please enter a valid date\n");
+                continue;
+            }
+        }while(!isItCorrectDate);
 
-        // Get the check-out date from the user
-        System.out.println("Please enter the check-out date");
-        isItCorrectDate = reservation.setCheck_out(inputDate());;
-        if(!isItCorrectDate){
-            System.out.println("Check-out date can not be before Check-in date .. Please enter a valid date");
-            return false;
-        }
-
-        // If the dates are correct return true
-        return true;
     }
 
     // TODO: 10/29/2022 Can we merge it? 
-    public static void updateReservation(){
-        int index = customerLogin();
-        if(index < 0){
-            System.out.println("Customer not found .. Please try again");
-            return;
-        }
+    public static void updateReservation(int customerIndex){
 
         // Get the indexes of current reservations
-        ArrayList<Integer> currentReservationsIndexes = getCurrentReservations(index);
+        ArrayList<Integer> currentReservationsIndexes = getCurrentReservations(customerIndex);
 
         int numOfCurrentReservations = currentReservationsIndexes.size();
 
@@ -406,7 +420,6 @@ public class Application {
         }
 
         // Print the related and current reservations of the customer
-
         for(int i : currentReservationsIndexes){
             System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
             System.out.println(reservations.get(i).toString());
@@ -417,32 +430,24 @@ public class Application {
         System.out.print("Enter the reservation ID: ");
         String reservationID = input.next();
 
-        // Check if the user has current and related reservations
-
+        // Search for the reservation
         boolean existReservation = false;
         for(int i : currentReservationsIndexes) {
             if(reservations.get(i).getReservationID().equals(reservationID)){
                 existReservation = true;
                 System.out.println("--- Please enter new dates to update the reservation ---\n");
 
-                // If the dates are correct display success message
-                if(getDates(reservations.get(i))){
-                    System.out.println("Reservation updated successfully\n");
+                // Get the check-in and check-out date
+                getDates(reservations.get(i));
 
-                    // Print the reservation after the update
-                    System.out.println("--------------------- After the update ----------------------");
-                    System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
-                    System.out.println(reservations.get(i).toString());
-                    break;
-                }
-
-                // If they are not correct end the method
-                else{
-                    return;
-                }
+                // Print the reservation after the update
+                System.out.println("--------------------- After the update ----------------------");
+                System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+                System.out.println(reservations.get(i).toString());
             }
         }
 
+        // If the reservation not found
         if(!existReservation){
             System.out.println("Reservation not found .. Please try again");
         }
@@ -450,91 +455,77 @@ public class Application {
     }
 
     // ------------------------- Cancel reservation -------------------------
-    public static void cancelReservation(){
-        int index = customerLogin();
-        if(index < 0){
-            System.out.println("Customer not found .. Please try again");
+    public static void cancelReservation(int customerIndex){
+
+        int numOfReservations = reservations.size();
+        String customerPhoneNumber = customers.get(customerIndex).getPhoneNumber();
+
+        ArrayList<Integer> currentReservationsIndexes = getCurrentReservations(customerIndex);
+
+        int numOfCurrentReservations = currentReservationsIndexes.size();
+
+        // Check if there are reservations
+        if(numOfCurrentReservations < 1){
+            System.out.println("Sorry there are no current reservations for the customer");
             return;
         }
 
-        int numOfReservations = reservations.size();
-        String customerPhoneNumber = customers.get(index).getPhoneNumber();
-
-        ArrayList<Integer> indexesOfRelated = new ArrayList<>();
-
-        boolean isThereReservations = false;
-
-        // Print the related and pending reservations of the customer
-        for(int i = 0; i < numOfReservations; i++){
-            boolean relatedReservation = reservations.get(i).getCustomer().getPhoneNumber().equals(customerPhoneNumber);
-            if(relatedReservation){
-                if(reservations.get(i).isPending()){
-                    isThereReservations = true;
-                    indexesOfRelated.add(i);
-                    System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
-                    System.out.println(reservations.get(i).toString());
-                }
-            }
+        // Print the related and current reservations of the customer
+        for(int i : currentReservationsIndexes){
+            System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+            System.out.println(reservations.get(i).toString());
         }
-
         System.out.println("-------------------------------------------------------------");
 
-        // Check if the user has pending and related reservations
-        if(isThereReservations){
-            System.out.print("Enter the reservation ID: ");
-            String reservationID = input.next();
+        // Get the reservation ID from the customer
+        System.out.print("Enter the reservation ID: ");
+        String reservationID = input.next();
 
-            boolean correctReservationID = false;
-            for(int i = 0; i < indexesOfRelated.size(); i++){
-                if(reservationID.equals(reservations.get(indexesOfRelated.get(i)).getReservationID())){
-                    correctReservationID = true;
-                    System.out.print("are you sure you want to cancel the reservation? [yes/no]: ");
-                    if(checkConfirm()){
+        // Search for the reservation
+        boolean existReservation = false;
+        for(int i : currentReservationsIndexes) {
+            if (reservations.get(i).getReservationID().equals(reservationID)) {
+                existReservation = true;
 
-                        // TODO: 10/21/2022 WHAAAAAT
-                        int deletedIndex = indexesOfRelated.get(i);
-                        reservations.remove(deletedIndex);
-                        System.out.println("Reservation deleted successfully\n");
-                        return;
-                    }
+                // Print the reservation before delete it
+                System.out.println("The selected reservation: ");
+                System.out.println("-------------------------------------------------------------");
+                System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+                System.out.println(reservations.get(i).toString());
+                System.out.println("-------------------------------------------------------------");
+                System.out.print("are you sure you want to cancel the reservation? [yes/no]: ");
+                if(checkConfirm()){
+                    // TODO: 10/21/2022 WHAAAAAT
+                    // Remove the reservation
+                    reservations.get(i).getRoom().setAvailable(true);
+                    reservations.remove(i);
+                    System.out.println("Reservation deleted successfully\n");
+                    return;
                 }
             }
-            if(!correctReservationID){
-                System.out.println("Invalid reservation ID .. Please try again");
-            }
         }
-        else{
-            System.out.println("Sorry there is no pending reservations");
-        }
-
     }
 
     // ------------------------ Old reservations ------------------------
-    public static void displayOldReservations(){
-        int index = customerLogin();
-        if(index < 0){
-            System.out.println("Customer not found .. Please try again");
-        }
-        else{
-            int numOfReservations = reservations.size();
-            String customerPhoneNumber = customers.get(index).getPhoneNumber();
+    public static void displayOldReservations(int customerIndex){
 
-            boolean isThereReservations = false;
-            // Print the related reservations of the customer
-            for(int i = 0; i < numOfReservations; i++){
-                boolean relatedReservation = reservations.get(i).getCustomer().getPhoneNumber().equals(customerPhoneNumber);
-                if(relatedReservation){
-                    isThereReservations = true;
-                    System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
-                    System.out.println(reservations.get(i).toString());
-                }
+        int numOfReservations = reservations.size();
+        String customerPhoneNumber = customers.get(customerIndex).getPhoneNumber();
+
+        boolean isThereReservations = false;
+        // Print the related reservations of the customer
+        for(int i = 0; i < numOfReservations; i++){
+            boolean relatedReservation = reservations.get(i).getCustomer().getPhoneNumber().equals(customerPhoneNumber);
+            if(relatedReservation){
+                isThereReservations = true;
+                System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+                System.out.println(reservations.get(i).toString());
             }
-            if(!isThereReservations){
-                System.out.println("Sorry there are no old reservations");
-            }
+        }
+        if(!isThereReservations){
+            System.out.println("Sorry there are no old reservations");
         }
     }
-
 
     // -------------------
     public static boolean checkConfirm(){
@@ -548,8 +539,6 @@ public class Application {
     }
 
 
-
-
     // =================================== Methods ============================
 
     public static void displayAvailableNormalRooms(){
@@ -559,6 +548,7 @@ public class Application {
         // Print only the available normal rooms from the rooms list
         System.out.println("======================= Normal Rooms ========================");
         System.out.printf("%-15s %-15s %-15s %-20s \n", "Room number", "Price", "Available", "Number of beds");
+
         for(int i = 0; i < roomsArraySize; i++){
             if((rooms.get(i) instanceof NormalRoom) && (rooms.get(i).isAvailable())){
                 System.out.println(rooms.get(i).toString());
@@ -688,7 +678,7 @@ public static void reservationsMenu(){
         choice = input.nextInt();
         switch(choice){
             case 1:
-                newReservation();
+                customerLoginMenu();
                 break;
             case 2:
                 updateReservationByReceptionist();
@@ -763,22 +753,15 @@ public static void reservationsMenu(){
                 existReservation = true;
 
                 System.out.println("--- Please enter new dates to update the reservation ---\n");
+                getDates(reservations.get(i));
 
-                // If the dates are correct display success message
-                if(getDates(reservations.get(i))){
-                    System.out.println("Reservation updated successfully\n");
+                // Display success message
+                System.out.println("Reservation updated successfully\n");
 
-                    // Print the reservation after the update
-                    System.out.println("--------------------- After the update ----------------------");
-                    System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
-                    System.out.println(reservations.get(i).toString());
-                    break;
-                }
-
-                // If they are not correct end the method
-                else{
-                    return;
-                }
+                // Print the reservation after the update
+                System.out.println("--------------------- After the update ----------------------");
+                System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+                System.out.println(reservations.get(i).toString());
             }
         }
 
@@ -831,6 +814,8 @@ public static void reservationsMenu(){
 
                         // TODO: 10/21/2022 WHAAAAAT
                         int deletedIndex = indexesOfPending.get(i);
+
+                        reservations.get(deletedIndex).getRoom().setAvailable(true);
                         reservations.remove(deletedIndex);
                         System.out.println("Reservation deleted successfully\n");
                         return;
@@ -933,7 +918,6 @@ public static void reservationsMenu(){
         int choice = 0;
         do{
             System.out.println();
-            System.out.println("=============================================================");
             System.out.println("============== My Hotel System - Update Customer ============");
 
             // Print the information of customer before delete it
@@ -1030,7 +1014,6 @@ public static void reservationsMenu(){
         int choice = 0;
         do{
             System.out.println();
-            System.out.println("=============================================================");
             System.out.println("================ My Hotel System - Rooms Menu ===============");
             System.out.println("1- Add new room                                             +");
             System.out.println("2- Update room                                              +");
@@ -1065,18 +1048,32 @@ public static void reservationsMenu(){
 
     public static void newRoom() {
         System.out.println();
-        System.out.println("============== My Hotel System - New Room ===============");
 
         int roomType;
         do{
-            System.out.println("1- Normal room ");
-            System.out.println("2- Meeting room ");
+            System.out.println("================ My Hotel System - New Room =================");
+            System.out.println("1- Normal room                                              +");
+            System.out.println("2- Meeting room                                             +");
+            System.out.println("3- Go back                                                  +");
+            System.out.println("-------------------------------------------------------------");
             System.out.print("Enter your choice: ");
             roomType = input.nextInt();
+
+            if(roomType == 3){
+                return;
+            }
         }while(roomType != 1 && roomType != 2);
 
         System.out.print("Enter room number: ");
         int roomNumber = input.nextInt();
+
+        int numOfRooms = rooms.size();
+        for(int i = 0; i < numOfRooms; i++){
+            if(roomNumber == rooms.get(i).getRoomNumber()){
+                System.out.println("Room number is already exists");
+                return;
+            }
+        }
 
         System.out.print("Enter the price: ");
         double roomPrice = input.nextDouble();
