@@ -109,16 +109,17 @@ public class Reservation {
         return reservationID;
     }
 
-    public boolean automaticUpdateAvailability(){
+    public void automaticUpdateAvailability(){
         LocalDate todayDate = LocalDate.now();
 
-        // If checkout date came, set room available to true
-        if(DAYS.between(this.check_out, todayDate) > 0){
-            return true;
+        if((DAYS.between(todayDate, this.check_in) <= 0) && (DAYS.between(todayDate, this.check_out) >= 0))
+        {
+            getRoom().setAvailable(false);
         }
         else{
-            return false;
+            getRoom().setAvailable(true);
         }
+
     }
 
     public boolean isPending(){

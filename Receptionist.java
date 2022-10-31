@@ -21,6 +21,6 @@ public class Receptionist extends User{
 
     @Override
     public String toString()  {
-        return (String.format("%-15s %-25s %-12s %.2f", super.getID(), (super.getFirstName() + super.getLastName()), super.getPhoneNumber(), this.salary));
+        return (String.format("%-15s %-25s %-12s %.2f", super.getID(), (super.getFirstName() + " " + super.getLastName()), super.getPhoneNumber(), this.salary));
     }
 }
