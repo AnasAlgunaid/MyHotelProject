@@ -264,7 +264,7 @@ public class Application {
         int isCitizen;
         do{
             System.out.println();
-            System.out.println("============= My Hotel System - New Account =============");
+            System.out.println("=============== My Hotel System - New Account ===============");
 
             System.out.println("1- Citizen                                                  +");
             System.out.println("2- Resident                                                 +");
@@ -677,7 +677,7 @@ public static void reservationsMenu(){
     do{
         System.out.println();
         System.out.println("============ My Hotel System - Reservations Menu ============");
-        System.out.println("1- New reservation for customer                             +");
+        System.out.println("1- New reservation                                          +");
         System.out.println("2- Update reservation                                       +");
         System.out.println("3- Cancel reservation                                       +");
         System.out.println("4- Print all reservations                                   +");
@@ -689,7 +689,12 @@ public static void reservationsMenu(){
 
         switch(choice){
             case 1:
-                customerLoginMenu();
+                int customerIndex = customerLoginMenu();
+                if(customerIndex < 0){
+                    continue;
+                }
+                newReservation(customerIndex);
+
                 break;
             case 2:
                 updateReservationByReceptionist();
@@ -832,7 +837,7 @@ public static void reservationsMenu(){
             if(reservationID.equals(reservations.get(indexesOfCurrent.get(i)).getReservationID())){
                 correctReservationID = true;
 
-                System.out.print("are you sure you want to remove the reservation? [yes/no]: ");
+                System.out.print("Are you sure you want to remove the reservation? [yes/no]: ");
                 if(checkConfirm()){
 
                     // Remove the reservation and decrement the number of reservations of the customer
@@ -1456,9 +1461,10 @@ public static void reservationsMenu(){
                     String phoneNumber = input.next();
 
                     int numOfReceptionists = receptionists.size();
+                    boolean isExist = false;
                     for(int i = 0; i < numOfReceptionists; i++){
                         if(receptionists.get(i).getPhoneNumber().equals(phoneNumber)){
-
+                            isExist = true;
                             // Display receptionist's name before update it
                             System.out.println("--------- Update receptionist: " + receptionists.get(i).printFullName() + "---------");
 
@@ -1477,12 +1483,17 @@ public static void reservationsMenu(){
                             break;
                         }
                     }
+
+                    if(!isExist){
+                        System.out.println("Receptionist not found .. Please try again");
+                    }
                     break;
                 }
 
                 case 3:
                 {
                     deleteReceptionist();
+                    break;
                 }
 
                 case 4:
@@ -1495,8 +1506,8 @@ public static void reservationsMenu(){
                     }
                     System.out.println();
                     System.out.println("=========== My Hotel System - Receptionists report ==========");
+                    System.out.printf("%-15s %-25s %-12s %-10s \n", "ID", "Full name", "Phone number", "Salary");
                     for(int i = 0; i < numOfReceptionists; i++){
-                        System.out.printf("%-15s %-25s %-12s %-10s \n", "ID", "Full name", "Phone number", "Salary");
                         System.out.println(receptionists.get(i).toString());
                     }
                     System.out.println("-------------------------------------------------------------");
@@ -1514,6 +1525,7 @@ public static void reservationsMenu(){
                     adminPassword = input.next();
 
                     System.out.println("----------- Login information updated successfully ----------");
+                    break;
                 }
 
                 case 6:
@@ -1523,7 +1535,7 @@ public static void reservationsMenu(){
                     System.out.println("Please enter a valid choice");
 
             }
-        }while(choice != 5);
+        }while(choice != 6);
 
     }
 
