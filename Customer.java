@@ -21,11 +21,6 @@ public class Customer extends User{
     public void cancelReservation(){
         numOfReservations--;
     }
-// TODO: 10/21/2022
-//    @Override
-//    public String toString() {
-//        return (String.format("%-15s %-25s %-12s %-10d", getID(), (getFirstName() + getLastName()), getPhoneNumber(), numOfReservations));
-//    }
 
     @Override
     public String toString() {

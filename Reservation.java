@@ -28,9 +28,6 @@ public class Reservation {
         return reservationID;
     }
 
-//    public void setReservationID(String reservationID) {
-//        this.reservationID = reservationID;
-//    }
 
     public Customer getCustomer() {
         return customer;
@@ -86,9 +83,6 @@ public class Reservation {
         return totalPrice;
     }
 
-//    public void setTotalPrice(double totalPrice) {
-//        this.totalPrice = totalPrice;
-//    }
 
     // Other methods
     public double calculateTotalPrice(){
@@ -96,8 +90,6 @@ public class Reservation {
     }
 
     public String generateReservationID(){
-        // include the first two letters of the customer's name in the reservation ID.
-//        String reservationID = "" + this.customer.getFirstName().substring(0, 3);
         // Generate random id of 5 numbers
         reservationID = "";
         Random random = new Random();

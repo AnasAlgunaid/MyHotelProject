@@ -6,7 +6,8 @@ public class Room {
     private boolean available;
 
     // Constructor
-    public Room(){}
+    public Room() {
+    }
 
     public Room(int roomNumber, double price) {
         this.roomNumber = roomNumber;
@@ -41,9 +42,4 @@ public class Room {
         this.available = available;
     }
 
-    // Other methods
-//    @Override
-//    public String toString() {
-//        return (String.format("%-12d %-12d %-12f %-12b", numOfRooms, numOfBathRooms, pricePerNight, available));
-//    }
 }
