@@ -28,9 +28,14 @@ public class ForeignCustomer extends Customer{
     }
 
     // Other methods
+    public static void printHeader(){
+        System.out.println();
+        System.out.printf("%-17s %-20s %-17s %-17s %-15s %-15s\n", "National ID", "Full name", "Phone number", "Passport", "Country", "Reservations");
+        System.out.println("--------------------------------------------------------------------------------------------------------");
+    }
 
     @Override
     public String toString() {
-        return (String.format("%-15s %-25s %-15s %-15s %-15s", getID(), (getFirstName() + " " + getLastName()),getPhoneNumber(), this.passport, this.country ));
+        return (String.format("%-17s %-20s %-17s %-17s %-15s %-15d", getID(), (getFirstName() + " " + getLastName()),getPhoneNumber(), this.passport, this.country, getNumOfReservations() ));
     }
 }

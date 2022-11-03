@@ -114,7 +114,7 @@ public class Reservation {
 
     }
 
-    public boolean isPending(){
+    public boolean isValid(){
         LocalDate todayDate = LocalDate.now();
 
         if(DAYS.between(todayDate, this.check_out) > 0){
@@ -125,11 +125,18 @@ public class Reservation {
         }
     }
 
+    public static void printHeader(){
+        System.out.println();
+        System.out.printf("%-20s %-15s %-15s %-15s %-15s %-15s %-10s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Status", "Total Price");
+        System.out.println("-------------------------------------------------------------------------------------------------------------");
+    }
+
     @Override
     public String toString() {
-        return (String.format("%-15s %-15s %-15s %-20s %-20s %-15s",
+        return (String.format("%-20s %-15s %-15s %-15s %-15s %-10s %.2f",
                 this.reservationID, customer.getPhoneNumber(),
                 room.getRoomNumber(), this.check_in.toString(),
-                this.check_out.toString(), this.totalPrice));
+                this.check_out.toString(), (isValid()? "Valid": "Expired"),
+                this.totalPrice));
     }
 }

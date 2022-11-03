@@ -19,8 +19,13 @@ public class Receptionist extends User{
 
     // Other methods
 
+    public static void printHeader(){
+        System.out.println();
+        System.out.printf("%-17s %-20s %-17s %-10s \n", "National ID", "Full name", "Phone number", "Salary");
+        System.out.println("-------------------------------------------------------------------");
+    }
     @Override
     public String toString()  {
-        return (String.format("%-15s %-25s %-12s %.2f", super.getID(), (super.getFirstName() + " " + super.getLastName()), super.getPhoneNumber(), this.salary));
+        return (String.format("%-17s %-20s %-17s %.2f", super.getID(), (super.getFirstName() + " " + super.getLastName()), super.getPhoneNumber(), this.salary));
     }
 }

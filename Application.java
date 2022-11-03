@@ -8,7 +8,7 @@ public class Application {
     static Scanner input = new Scanner(System.in);
 
     // Declare an ArrayList of customers
-    static ArrayList<User> customers = new ArrayList<>();
+    static ArrayList<Customer> customers = new ArrayList<>();
 
     // Declare an ArrayList of rooms
     static ArrayList<Room> rooms = new ArrayList<>();
@@ -131,7 +131,11 @@ public class Application {
         int choice = 0;
         do{
             System.out.println();
-            System.out.println("Welcome: " + customers.get(customerIndex).printFullName() + "\n");
+
+            // Print welcome message
+            System.out.println("\t\t\t\t\tWelcome " + customers.get(customerIndex).printFullName());
+            System.out.println("-------------------------------------------------------------");
+
             System.out.println("============== My Hotel System - Customer Menu ==============");
             System.out.println("1- New reservation                                          +");
             System.out.println("2- Update exist reservation                                 +");
@@ -253,9 +257,9 @@ public class Application {
 
         // Print the bill
         System.out.println("================ My Hotel System - The bill =================");
-        System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+        Reservation.printHeader();
         System.out.println(reservations.get(indexOfNewReservation).toString());
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------------------------------------------------");
         System.out.println("Reservation created successfully");
     }
 
@@ -306,7 +310,7 @@ public class Application {
 
             // Print the new customer information
             System.out.println("============ My Hotel System - Account information ==========");
-            System.out.printf("%-15s %-25s %-12s \n", "ID", "Full name", "Phone number");
+            Customer.printHeader();
             System.out.println(customers.get(customers.size()-1).toString());
 
         }
@@ -323,13 +327,13 @@ public class Application {
 
             // Print the new customer information
             System.out.println("============ My Hotel System - Account information ==========");
-            System.out.printf("%-15s %-25s %-15s %-15s %-15s\n", "ID", "Full name", "Phone number", "Passport", "Country");
+            ForeignCustomer.printHeader();
             System.out.println(customers.get(customers.size()-1).toString());
 
         }
 
         // Success message
-        System.out.println("-----+ Account successfully created +-----");
+        System.out.println("\n--------------------+ Account successfully created +---------------------");
         return true;
     }
 
@@ -372,7 +376,7 @@ public class Application {
 
             // Check if the reservation not in the past
             if (relatedReservation) {
-                if (reservations.get(i).isPending()) {
+                if (reservations.get(i).isValid()) {
                     isThereReservation = true;
                     indexesOfRelated.add(i);
                 }
@@ -421,10 +425,10 @@ public class Application {
 
         // Print the related and current reservations of the customer
         for(int i : currentReservationsIndexes){
-            System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+            Reservation.printHeader();
             System.out.println(reservations.get(i).toString());
         }
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------------------------------------------------");
 
         // Get the reservation ID from the customer
         System.out.print("Enter the reservation ID: ");
@@ -442,7 +446,7 @@ public class Application {
 
                 // Print the reservation after the update
                 System.out.println("--------------------- After the update ----------------------");
-                System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+                Reservation.printHeader();
                 System.out.println(reservations.get(i).toString());
             }
         }
@@ -472,10 +476,10 @@ public class Application {
 
         // Print the related and current reservations of the customer
         for(int i : currentReservationsIndexes){
-            System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+            Reservation.printHeader();
             System.out.println(reservations.get(i).toString());
         }
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("-------------------------------------------------------------------------------------------------------------");
 
         // Get the reservation ID from the customer
         System.out.print("Enter the reservation ID: ");
@@ -489,10 +493,9 @@ public class Application {
 
                 // Print the reservation before delete it
                 System.out.println("The selected reservation: ");
-                System.out.println("-------------------------------------------------------------");
-                System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+                Reservation.printHeader();
                 System.out.println(reservations.get(i).toString());
-                System.out.println("-------------------------------------------------------------");
+                System.out.println("-------------------------------------------------------------------------------------------------------------");
                 System.out.print("are you sure you want to cancel the reservation? [yes/no]: ");
                 if(checkConfirm()){
 
@@ -520,9 +523,8 @@ public class Application {
             boolean relatedReservation = reservations.get(i).getCustomer().getPhoneNumber().equals(customerPhoneNumber);
             if(relatedReservation){
                 isThereReservations = true;
-                System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price", "Status");
+                Reservation.printHeader();
                 System.out.println(reservations.get(i).toString());
-                System.out.printf(" %-10s\n", reservations.get(i).isPending()? "Pending": "Finished");
             }
         }
         if(!isThereReservations){
@@ -550,14 +552,14 @@ public class Application {
 
         // Print only the available normal rooms from the rooms list
         System.out.println("======================= Normal Rooms ========================");
-        System.out.printf("%-15s %-15s %-15s %-20s \n", "Room number", "Price", "Available", "Number of beds");
+        NormalRoom.printHeader();
 
         for(int i = 0; i < roomsArraySize; i++){
             if((rooms.get(i) instanceof NormalRoom) && (rooms.get(i).isAvailable())){
                 System.out.println(rooms.get(i).toString());
             }
         }
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------------");
 
     }
 
@@ -567,13 +569,13 @@ public class Application {
 
         // Print only the available meeting rooms from the rooms list
         System.out.println("======================= Meeting Rooms =======================");
-        System.out.printf("%-15s %-15s %-15s %-20s \n", "Room number", "Price", "Available", "Capacity(Persons)");
+        MeetingRoom.printHeader();
         for(int i = 0; i < roomsArraySize; i++){
             if((rooms.get(i) instanceof MeetingRoom)  && (rooms.get(i).isAvailable())){
                 System.out.println(rooms.get(i).toString());
             }
         }
-        System.out.println("-------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------------");
     }
 
     // Method to search for a room
@@ -631,8 +633,8 @@ public class Application {
 
         else{
             System.out.println("-------------------------------------------------------------");
-            System.out.println("\t\t\t\tWelcome " + receptionists.get(index).printFullName());
-            System.out.println("-------------------------------------------------------------\n");
+            System.out.println("\t\t\t\t\tWelcome " + receptionists.get(index).printFullName());
+            System.out.println("-------------------------------------------------------------");
 
         }
 
@@ -783,7 +785,7 @@ public static void reservationsMenu(){
 
                 // Print the reservation after the update
                 System.out.println("--------------------- After the update ----------------------");
-                System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+                Reservation.printHeader();
                 System.out.println(reservations.get(i).toString());
             }
         }
@@ -799,9 +801,9 @@ public static void reservationsMenu(){
 
         // Print all current reservations
         for(int i = 0; i < numOfReservations; i++){
-            if(reservations.get(i).isPending()){
+            if(reservations.get(i).isValid()){
                 indexesOfCurrent.add(i);
-                System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price");
+                Reservation.printHeader();
                 System.out.println(reservations.get(i).toString());
             }
         }
@@ -863,11 +865,11 @@ public static void reservationsMenu(){
             return;
         }
 
-        System.out.printf("\n%-15s %-15s %-15s %-20s %-20s %-15s %-10s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Total Price", "Status");
+        Reservation.printHeader();
         for(int i = 0; i < numOfReservations; i++){
             System.out.print(reservations.get(i).toString());
-            System.out.printf(" %-10s\n", reservations.get(i).isPending()? "Valid": "ُExpired");
         }
+        System.out.println();
     }
 
     public static void customersMenu(){
@@ -956,11 +958,11 @@ public static void reservationsMenu(){
 
             // Print the information of customer before delete it
             if(customers.get(customerIndex) instanceof ForeignCustomer){
-                System.out.printf("%-15s %-25s %-17s %-15s %-15s  \n", "ID", "Full name", "Phone number", "Passport", "Country");
+                ForeignCustomer.printHeader();
             }
 
             else{
-                System.out.printf("%-15s %-25s %-17s  \n", "ID", "Full name", "Phone number");
+                Customer.printHeader();
             }
 
             System.out.println(customers.get(customerIndex).toString());
@@ -1049,9 +1051,14 @@ public static void reservationsMenu(){
 
         // TODO: 11/1/2022 Foreign?
         // Print the information of customer before delete it
-        System.out.printf("%-15s %-25s %-12s \n", "ID", "Full name", "Phone number");
-        System.out.println(customers.get(customerIndex).toString());
+        if(customers.get(customerIndex) instanceof ForeignCustomer){
+            ForeignCustomer.printHeader();
+        }
 
+        else{
+            Customer.printHeader();
+            System.out.println(customers.get(customerIndex).toString());
+        }
 
         System.out.print("are you sure you want to delete the customer? [yes/no]: ");
         if(checkConfirm()){
@@ -1072,13 +1079,11 @@ public static void reservationsMenu(){
 
         System.out.println();
         System.out.println("============= My Hotel System - Citizen Customers ===========");
-        System.out.printf("%-15s %-25s %-17s %-15s \n", "ID", "Full name", "Phone number", "Reservations");
-        System.out.println("-------------------------------------------------------------");
+        Customer.printHeader();
 
         for(int i = 0; i < numOfCustomers; i++){
             if(!(customers.get(i) instanceof ForeignCustomer)){
                 System.out.print(customers.get(i).toString());
-                System.out.printf(" %-15d\n", ((Customer) customers.get(i)).getNumOfReservations());
             }
         }
     }
@@ -1094,13 +1099,11 @@ public static void reservationsMenu(){
 
         System.out.println();
         System.out.println("============ My Hotel System - Resident Customers ===========");
-        System.out.printf("%-15s %-25s %-17s %-15s %-15s %-15s \n", "ID", "Full name", "Phone number", "Passport", "Country","Reservations");
-        System.out.println("-------------------------------------------------------------");
+        ForeignCustomer.printHeader();
 
         for(int i = 0; i < numOfCustomers; i++){
             if((customers.get(i) instanceof ForeignCustomer)){
                 System.out.print(customers.get(i).toString());
-                System.out.printf(" %-15d\n", ((Customer) customers.get(i)).getNumOfReservations());
             }
         }
 
@@ -1187,7 +1190,7 @@ public static void reservationsMenu(){
 
             // Print the new room information
             System.out.println("============== My Hotel System - Room information ===========");
-            System.out.printf("%-15s %-15s %-15s %-20s\n", "Room #", "Price", "Available", "Number Of Beds");
+            NormalRoom.printHeader();
             System.out.println(rooms.get(rooms.size()-1).toString());
         }
 
@@ -1199,7 +1202,7 @@ public static void reservationsMenu(){
 
             // Print the new room information
             System.out.println("============== My Hotel System - Room information ===========");
-            System.out.printf("%-15s %-15s %-15s %-20s\n", "Room #", "Price", "Available", "Capacity");
+            MeetingRoom.printHeader();
             System.out.println(rooms.get(rooms.size()-1).toString());
 
         }
@@ -1243,7 +1246,12 @@ public static void reservationsMenu(){
             System.out.println("=============== My Hotel System - After updating ============");
 
             // Print the information of room before update it
-            System.out.printf("%-15s %-15s %-15s %-20s\n", "Room #", "Price", "Available", ((isItNormalRoom)? "Number of beds": "Capacity"));
+            if(isItNormalRoom){
+                NormalRoom.printHeader();
+            }
+            else{
+               MeetingRoom.printHeader();
+            }
             System.out.println(rooms.get(roomIndex).toString());
 
             System.out.println("-------------------------------------------------------------");
@@ -1335,7 +1343,13 @@ public static void reservationsMenu(){
         boolean isItNormalRoom = rooms.get(roomIndex) instanceof NormalRoom;
 
         // Print the information of room before delete it
-        System.out.printf("%-15s %-15s %-15s %-20s\n", "Room #", "Price", "Available", ((isItNormalRoom)? "Number of beds": "Capacity"));
+        if(isItNormalRoom){
+            NormalRoom.printHeader();
+        }
+        else{
+            MeetingRoom.printHeader();
+        }
+
         System.out.println(rooms.get(roomIndex).toString());
 
 
@@ -1375,7 +1389,7 @@ public static void reservationsMenu(){
                 case 1:
                 {
                     System.out.println("==================== Normal Rooms Report ====================");
-                    System.out.printf("%-15s %-15s %-15s %-20s\n", "Room #", "Price", "Available", "Number of beds");
+                    NormalRoom.printHeader();
 
                     // Print all normal rooms
                     for(int i = 0; i < numOfRooms; i++){
@@ -1389,7 +1403,7 @@ public static void reservationsMenu(){
                 case 2:
                 {
                     System.out.println("==================== Meeting Rooms Report ===================");
-                    System.out.printf("%-15s %-15s %-15s %-20s\n", "Room #", "Price", "Available", "Capacity");
+                    MeetingRoom.printHeader();
 
                     // Print all meeting rooms
                     for(int i = 0; i < numOfRooms; i++){
@@ -1506,11 +1520,12 @@ public static void reservationsMenu(){
                     }
                     System.out.println();
                     System.out.println("=========== My Hotel System - Receptionists report ==========");
-                    System.out.printf("%-15s %-25s %-12s %-10s \n", "ID", "Full name", "Phone number", "Salary");
+                    Receptionist.printHeader();
+
                     for(int i = 0; i < numOfReceptionists; i++){
                         System.out.println(receptionists.get(i).toString());
                     }
-                    System.out.println("-------------------------------------------------------------");
+                    System.out.println("-------------------------------------------------------------------");
                     break;
                 }
 
@@ -1592,8 +1607,7 @@ public static void reservationsMenu(){
         }
 
         // Print the information of Receptionist before delete it
-
-        System.out.printf("%-15s %-25s %-12s %-10s \n", "ID", "Full name", "Phone number", "Salary");
+        Receptionist.printHeader();
         System.out.println(receptionists.get(receptionistIndex).toString());
 
 
