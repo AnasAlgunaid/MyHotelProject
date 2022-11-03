@@ -3,19 +3,19 @@ public class Receptionist extends User{
     private double salary;
 
     // Constructors
-    public Receptionist(String firstName, String lastName, String phoneNumber, String password, double salary) {
-        super(firstName, lastName, phoneNumber, password);
+    public Receptionist(String ID, String firstName, String lastName, String phoneNumber, String password, double salary) {
+        super(ID, firstName, lastName, phoneNumber, password);
         this.salary = salary;
     }
 
     // Setters and getters
-    public double getSalary() {
-        return salary;
-    }
+//    public double getSalary() {
+//        return salary;
+//    }
 
-    public void setSalary(double salary) {
-        this.salary = salary;
-    }
+//    public void setSalary(double salary) {
+//        this.salary = salary;
+//    }
 
     // Other methods
 

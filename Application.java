@@ -30,7 +30,7 @@ public class Application {
         rooms.add(new NormalRoom(119, 600, 4));
         rooms.add(new MeetingRoom(121, 700, 4));
         rooms.add(new NormalRoom(122, 800, 4));
-        receptionists.add(new Receptionist("Anas", "Aljunaid", "0533039772", "pos123", 5000));
+        receptionists.add(new Receptionist("2210009109", "Anas", "Aljunaid", "0533039772", "pos123", 5000));
 
         int choice = 0;
 
@@ -247,8 +247,6 @@ public class Application {
         // Get the check-in and check-out date
         getDates(reservations.get(indexOfNewReservation));
 
-
-        // TODO: 10/29/2022
         // Add a reservation to the customer
         ((Customer) customer).addReservation();
 
@@ -284,15 +282,29 @@ public class Application {
         }while(isCitizen != 1 && isCitizen != 2);
 
         // Get the personal information from the user.
+
+        System.out.print("Enter the national ID: ");
+        String ID = input.next();
+
+        // Check if the national ID is already exists
+        int numOfCustomers = customers.size();
+        for(int i = 0; i < numOfCustomers; i++){
+            if(ID.equals(customers.get(i).getID())){
+                System.out.println("Sorry .. The national ID is already exists.");
+                return false;
+            }
+        }
+
         System.out.print("Enter the first name: ");
         String firstName = input.next();
+
         System.out.print("Enter the last name: ");
         String lastName = input.next();
+
         System.out.print("Enter the phone number: ");
         String phoneNumber = input.next();
 
         // Check if the phone number is already exists
-        int numOfCustomers = customers.size();
         for(int i = 0; i < numOfCustomers; i++){
             if(phoneNumber.equals(customers.get(i).getPhoneNumber())){
                 System.out.println("The phone number is already exists .. You can sign in");
@@ -306,7 +318,7 @@ public class Application {
         // Citizen customer
         if(isCitizen == 1){
             // Store the customer
-            customers.add(new Customer(firstName, lastName, phoneNumber, password));
+            customers.add(new Customer(ID, firstName, lastName, phoneNumber, password));
 
             // Print the new customer information
             System.out.println("============ My Hotel System - Account information ==========");
@@ -323,7 +335,7 @@ public class Application {
             String passport = input.next();
 
             // Store the customer
-            customers.add(new ForeignCustomer(firstName, lastName, phoneNumber, password, passport, country));
+            customers.add(new ForeignCustomer(ID, firstName, lastName, phoneNumber, password, passport, country));
 
             // Print the new customer information
             System.out.println("============ My Hotel System - Account information ==========");
@@ -1556,13 +1568,29 @@ public static void reservationsMenu(){
 
     public static Receptionist receptionistInfo(){
         // Get the information of new receptionist.
+
+        // Get the number of receptionists
+        int numOfReceptionists = receptionists.size();
+
+        // Check if the ID is already exists
+        System.out.print("Enter the national ID: ");
+        String ID = input.next();
+        for(int i = 0; i < numOfReceptionists; i++){
+            if(receptionists.get(i) == null){
+                continue;
+            }
+
+            if(ID.equals(receptionists.get(i).getID())){
+                System.out.println("The ID is already exists");
+                return null;
+            }
+        }
+
+
         System.out.print("Enter the first name: ");
         String firstName = input.next();
         System.out.print("Enter the last name: ");
         String lastName = input.next();
-
-        // Get the number of receptionists
-        int numOfReceptionists = receptionists.size();
 
         // Check if the phone number is already exists
         System.out.print("Enter the phone number: ");
@@ -1583,7 +1611,7 @@ public static void reservationsMenu(){
 
         double salary = readDouble("Enter the salary: ");
 
-        return (new Receptionist(firstName, lastName, phoneNumber, receptionistPassword, salary));
+        return (new Receptionist(ID, firstName, lastName, phoneNumber, receptionistPassword, salary));
     }
 
     public static void deleteReceptionist(){

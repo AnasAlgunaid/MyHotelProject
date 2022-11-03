@@ -11,8 +11,8 @@ public class User {
     // Constructors
     public User(){};
 
-    public User(String firstName, String lastName, String phoneNumber, String password) {
-        this.ID = generateID();
+    public User(String ID, String firstName, String lastName, String phoneNumber, String password) {
+        this.ID = ID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
@@ -65,17 +65,18 @@ public class User {
         return (firstName + " " + lastName);
     }
 
-    public static String generateID(){
-        String id = "";
-        // Generate random id of 5 numbers
-        Random random = new Random();
-        for(int i = 0; i < 5; i++){
-            int randomNum = random.nextInt(10);
-            id += randomNum;
-        }
+//    public static String generateID(){
+//        String id = "";
+//        // Generate random id of 5 numbers
+//        Random random = new Random();
+//        for(int i = 0; i < 5; i++){
+//            int randomNum = random.nextInt(10);
+//            id += randomNum;
+//        }
+//
+//        return id;
+//    }
 
-        return id;
-    }
     @Override
     public String toString() {
         return (String.format("%-15s %-25s %-12s", ID, (firstName + lastName), phoneNumber));

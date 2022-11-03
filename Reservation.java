@@ -33,21 +33,21 @@ public class Reservation {
         return customer;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
+//    public void setCustomer(Customer customer) {
+//        this.customer = customer;
+//    }
 
     public Room getRoom() {
         return room;
     }
 
-    public void setRoom(Room room) {
-        this.room = room;
-    }
-
-    public LocalDate getCheck_in() {
-        return check_in;
-    }
+//    public void setRoom(Room room) {
+//        this.room = room;
+//    }
+//
+//    public LocalDate getCheck_in() {
+//        return check_in;
+//    }
 
     public boolean setCheck_in(LocalDate check_in) {
 
@@ -63,9 +63,9 @@ public class Reservation {
         }
     }
 
-    public LocalDate getCheck_out() {
-        return check_out;
-    }
+//    public LocalDate getCheck_out() {
+//        return check_out;
+//    }
 
     public boolean setCheck_out(LocalDate check_out) {
         if(DAYS.between(this.check_in, check_out) > 0){
@@ -79,9 +79,9 @@ public class Reservation {
 
     }
 
-    public double getTotalPrice() {
-        return totalPrice;
-    }
+//    public double getTotalPrice() {
+//        return totalPrice;
+//    }
 
 
     // Other methods
@@ -127,7 +127,7 @@ public class Reservation {
 
     public static void printHeader(){
         System.out.println();
-        System.out.printf("%-20s %-15s %-15s %-15s %-15s %-15s %-10s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Status", "Total Price");
+        System.out.printf("%-20s %-15s %-15s %-15s %-15s %-10s %-10s\n", "Reservation ID", "Phone number", "Room number", "Check-in", "Check-out", "Status", "Total Price");
         System.out.println("-------------------------------------------------------------------------------------------------------------");
     }
 

@@ -4,8 +4,8 @@ public class Customer extends User{
 
     // Constructors
     public Customer(){}
-    public Customer(String firstName, String lastName, String phoneNumber, String password) {
-        super(firstName, lastName, phoneNumber, password);
+    public Customer(String ID, String firstName, String lastName, String phoneNumber, String password) {
+        super(ID, firstName, lastName, phoneNumber, password);
     }
 
     // Getter
