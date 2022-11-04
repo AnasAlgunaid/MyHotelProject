@@ -19,6 +19,7 @@ public class Application {
     // Declare an ArrayList of receptionist
     static ArrayList<Receptionist> receptionists = new ArrayList<>();
 
+    // Define the default username and password for the control panel
     static String adminUser = "admin";
     static String adminPassword = "admin";
 
@@ -37,6 +38,7 @@ public class Application {
         // Display main menu until the user choose to exit the system
         do{
 
+            // C
             refreshAvailability();
 
             //Get the choice from the user
@@ -73,7 +75,7 @@ public class Application {
         System.out.println("4- Exit                                                     +");
         System.out.println("-------------------------------------------------------------");
 
-        // CHECK_AND_TRY
+        // Return the choice
         return (readInt("Please enter your choice: "));
     }
 
@@ -92,18 +94,27 @@ public class Application {
 
             int customerIndex;
             switch(choice){
+
+                // Sign in
                 case 1:
                 {
                     customerIndex = customerLogin();
+
+                    // If the customer not exist
                     if(customerIndex < 0){
                         System.out.println("Customer not found .. Please try again\n");
                         break;
                     }
+
+                    // Return the customer index if it is exist
                     return customerIndex;
                 }
+
+                // Sign up
                 case 2:
                 {
                     if(newCustomer()){
+
                         // Return the index of the new user
                         return (customers.size()-1);
                     }
@@ -118,12 +129,14 @@ public class Application {
             }
         }while(choice != 3);
 
+        // If the customer choose to exit return -1
         return -1;
     }
 
     public static void customersSystem(){
         int customerIndex = customerLoginMenu();
 
+        // If the customer choose to exit
         if(customerIndex < 0){
             return;
         }
@@ -169,20 +182,21 @@ public class Application {
     }
 
     public static void newReservation(int customerIndex){
+
         // If there are no rooms
-        if(rooms.size() == 0){
+        if(rooms.isEmpty()){
             System.out.println("Sorry, there are no rooms");
             return;
         }
 
-        int indexOfSelectedRoom = -1;
-
         System.out.println();
         System.out.println("============= My Hotel System - New Reservation =============");
 
+        // Get the index of the selected room
+        int indexOfSelectedRoom = -1;
         indexOfSelectedRoom = chooseRoom();
 
-        // If the user choose to go back
+        // If the user choose to go back or if he chose a non exist room
         if(indexOfSelectedRoom < 0){
             return;
         }
@@ -239,8 +253,6 @@ public class Application {
 
         // Store the index of the new reservation
         int indexOfNewReservation = reservations.size()-1;
-
-        boolean isItCorrectDate = false;
 
         System.out.println("================== Step [2/2]: Enter dates ==================");
 
@@ -378,8 +390,6 @@ public class Application {
 
         ArrayList<Integer> indexesOfRelated = new ArrayList<>();
 
-        boolean isThereReservation = false;
-
         // Get the related and current reservations of the customer
         for (int i = 0; i < numOfReservations; i++) {
 
@@ -389,7 +399,6 @@ public class Application {
             // Check if the reservation not in the past
             if (relatedReservation) {
                 if (reservations.get(i).isValid()) {
-                    isThereReservation = true;
                     indexesOfRelated.add(i);
                 }
             }
@@ -427,10 +436,9 @@ public class Application {
         // Get the indexes of current reservations
         ArrayList<Integer> currentReservationsIndexes = getCurrentReservations(customerIndex);
 
-        int numOfCurrentReservations = currentReservationsIndexes.size();
 
         // Check if there are reservations
-        if(numOfCurrentReservations < 1){
+        if(currentReservationsIndexes.isEmpty()){
             System.out.println("Sorry there are no current reservations for the customer");
             return;
         }
@@ -473,15 +481,11 @@ public class Application {
     // ------------------------- Cancel reservation -------------------------
     public static void cancelReservation(int customerIndex){
 
-        int numOfReservations = reservations.size();
-        String customerPhoneNumber = customers.get(customerIndex).getPhoneNumber();
-
+        // Define an arraylist to store the indexes of customer's current reservations
         ArrayList<Integer> currentReservationsIndexes = getCurrentReservations(customerIndex);
 
-        int numOfCurrentReservations = currentReservationsIndexes.size();
-
         // Check if there are reservations
-        if(numOfCurrentReservations < 1){
+        if(currentReservationsIndexes.isEmpty()){
             System.out.println("Sorry there are no current reservations for the customer");
             return;
         }
@@ -511,15 +515,20 @@ public class Application {
                 System.out.print("are you sure you want to cancel the reservation? [yes/no]: ");
                 if(checkConfirm()){
 
-
-                    // Remove the reservation
+                    // Set the room to available and decrement the number of reservations of the customer
                     reservations.get(i).getRoom().setAvailable(true);
                     reservations.get(i).getCustomer().cancelReservation();
+
+                    // Remove the reservation
                     reservations.remove(i);
                     System.out.println("Reservation deleted successfully\n");
                     return;
                 }
             }
+        }
+
+        if(!existReservation){
+            System.out.println("Reservation not found .. Please try again\n");
         }
     }
 
@@ -529,17 +538,17 @@ public class Application {
         int numOfReservations = reservations.size();
         String customerPhoneNumber = customers.get(customerIndex).getPhoneNumber();
 
-        boolean isThereReservations = false;
+        boolean isThereReservation = false;
         // Print the related reservations of the customer
         for(int i = 0; i < numOfReservations; i++){
             boolean relatedReservation = reservations.get(i).getCustomer().getPhoneNumber().equals(customerPhoneNumber);
             if(relatedReservation){
-                isThereReservations = true;
+                isThereReservation = true;
                 Reservation.printHeader();
                 System.out.println(reservations.get(i).toString());
             }
         }
-        if(!isThereReservations){
+        if(!isThereReservation){
             System.out.println("Sorry you don't have any reservations");
         }
     }
@@ -769,11 +778,8 @@ public static void reservationsMenu(){
         // Print all current reservations and get the indexes of them
         ArrayList<Integer> indexesOfCurrent = getCurrentReservations();
 
-        // Get the number of current reservations
-        int numOfCurrentReservations = indexesOfCurrent.size();
-
-        // Check if there are reservations
-        if(numOfCurrentReservations < 1){
+        // Check if there are no reservations
+        if(indexesOfCurrent.isEmpty()){
             System.out.println("Sorry there are no current reservations");
             return;
         }
@@ -828,11 +834,8 @@ public static void reservationsMenu(){
         // Print all current reservations
         ArrayList<Integer> indexesOfCurrent = getCurrentReservations();
 
-        // Get the number of current reservations
-        int numOfCurrentReservations = indexesOfCurrent.size();
-
         // Check if there are reservations
-        if(numOfCurrentReservations < 1){
+        if(indexesOfCurrent.isEmpty()){
             System.out.println("Sorry there are no current reservations");
             return;
         }
@@ -854,8 +857,11 @@ public static void reservationsMenu(){
                 System.out.print("Are you sure you want to remove the reservation? [yes/no]: ");
                 if(checkConfirm()){
 
-                    // Remove the reservation and decrement the number of reservations of the customer
+                    // Set the room to available and decrement the number of reservations of the customer
+                    reservations.get(i).getRoom().setAvailable(true);
                     reservations.get(i).getCustomer().cancelReservation();
+
+                    // Remove the reservation
                     reservations.remove(indexesOfCurrent.get(i));
                     System.out.println("Reservation deleted successfully\n");
                     return;
@@ -863,7 +869,7 @@ public static void reservationsMenu(){
             }
         }
         if(!correctReservationID){
-            System.out.println("Invalid reservation ID .. Please try again");
+            System.out.println("Reservation not found .. Please try again\n");
         }
 
     }
@@ -872,7 +878,7 @@ public static void reservationsMenu(){
 
         int numOfReservations = reservations.size();
 
-        if(numOfReservations == 0){
+        if(reservations.isEmpty()){
             System.out.println("Sorry, there are no reservations");
             return;
         }
@@ -893,7 +899,7 @@ public static void reservationsMenu(){
             System.out.println("2- Update customer                                          +");
             System.out.println("3- Delete customer                                          +");
             System.out.println("4- Citizen customers report                                 +");
-            System.out.println("5- Resident customers report                                +");
+            System.out.println("5- Foreign customers report                                 +");
             System.out.println("6- Exit                                                     +");
             System.out.println("-------------------------------------------------------------");
 
@@ -918,7 +924,7 @@ public static void reservationsMenu(){
                     break;
 
                 case 5:
-                    displayResidentCustomers();
+                    displayForeignCustomers();
                     break;
 
                 case 6:
@@ -1084,7 +1090,7 @@ public static void reservationsMenu(){
 
         int numOfCustomers = customers.size();
 
-        if(numOfCustomers == 0){
+        if(customers.isEmpty()){
             System.out.println("Sorry, there are no customers");
             return;
         }
@@ -1093,30 +1099,43 @@ public static void reservationsMenu(){
         System.out.println("============= My Hotel System - Citizen Customers ===========");
         Customer.printHeader();
 
+        int numOfCitizens = 0;
+
         for(int i = 0; i < numOfCustomers; i++){
             if(!(customers.get(i) instanceof ForeignCustomer)){
                 System.out.print(customers.get(i).toString());
+                numOfCitizens++;
             }
+        }
+
+        if(numOfCitizens == 0){
+            System.out.println("Sorry .. there are no citizen customers");
         }
     }
 
-    public static void displayResidentCustomers(){
+    public static void displayForeignCustomers(){
 
         int numOfCustomers = customers.size();
 
-        if(numOfCustomers == 0){
+        if(customers.isEmpty()){
             System.out.println("Sorry, there are no customers");
             return;
         }
 
         System.out.println();
-        System.out.println("============ My Hotel System - Resident Customers ===========");
+        System.out.println("============ My Hotel System - Foreign Customers ============");
         ForeignCustomer.printHeader();
 
+        int numOfResidents = 0;
         for(int i = 0; i < numOfCustomers; i++){
             if((customers.get(i) instanceof ForeignCustomer)){
                 System.out.print(customers.get(i).toString());
+                numOfResidents++;
             }
+        }
+
+        if(numOfResidents == 0){
+            System.out.println("Sorry .. there are no foreign customers");
         }
 
     }
@@ -1379,7 +1398,7 @@ public static void reservationsMenu(){
         int numOfRooms = rooms.size();
 
         // Check if there are rooms
-        if(numOfRooms == 0){
+        if(rooms.isEmpty()){
             System.out.println("Sorry, there are no rooms");
             return;
         }
@@ -1526,7 +1545,7 @@ public static void reservationsMenu(){
                 {
                     int numOfReceptionists = receptionists.size();
 
-                    if(numOfReceptionists == 0){
+                    if(receptionists.isEmpty()){
                         System.out.println("Sorry, there are no receptionists");
                         continue;
                     }

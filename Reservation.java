@@ -12,6 +12,7 @@ public class Reservation {
     private LocalDate check_out;
     private double totalPrice;
 
+    private static int startID = 0;
     //Constructors
     public Reservation(Customer customer, Room room) {
         this.reservationID = generateReservationID();
@@ -90,15 +91,8 @@ public class Reservation {
     }
 
     public String generateReservationID(){
-        // Generate random id of 5 numbers
-        reservationID = "";
-        Random random = new Random();
-        for(int i = 0; i < 5; i++){
-            int randomNum = random.nextInt(10);
-            reservationID += randomNum;
-        }
-
-        return reservationID;
+        int ID = ++startID;
+        return String.format("%06d", ID);
     }
 
     public void automaticUpdateAvailability(){
