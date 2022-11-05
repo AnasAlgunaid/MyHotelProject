@@ -33,12 +33,12 @@ public class Application {
         rooms.add(new NormalRoom(122, 800, 4));
         receptionists.add(new Receptionist("2210009109", "Anas", "Aljunaid", "0533039772", "pos123", 5000));
 
-        int choice = 0;
+        int choice;
 
         // Display main menu until the user choose to exit the system
         do{
 
-            // C
+            // Update the rooms availability
             refreshAvailability();
 
             //Get the choice from the user
@@ -48,6 +48,7 @@ public class Application {
                 case 1:
                     customersSystem();
                     break;
+
                 case 2:
                     receptionistSystem();
                     break;
@@ -59,6 +60,7 @@ public class Application {
                 case 4:
                     System.out.println("Thank your for using the program .. GoodBey");
                     break;
+
                 default:
                     System.out.println("Please enter a valid choice");
             }
@@ -106,7 +108,7 @@ public class Application {
                         break;
                     }
 
-                    // Return the customer index if it is exist
+                    // Return the customer index if it is existed
                     return customerIndex;
                 }
 
@@ -114,7 +116,6 @@ public class Application {
                 case 2:
                 {
                     if(newCustomer()){
-
                         // Return the index of the new user
                         return (customers.size()-1);
                     }
@@ -134,14 +135,15 @@ public class Application {
     }
 
     public static void customersSystem(){
+        // Get the customer index from the login menu
         int customerIndex = customerLoginMenu();
 
-        // If the customer choose to exit
+        // If the customer choose to exit or if the customer not exist
         if(customerIndex < 0){
             return;
         }
 
-        int choice = 0;
+        int choice;
         do{
             System.out.println();
 
@@ -149,6 +151,7 @@ public class Application {
             System.out.println("\t\t\t\t\tWelcome " + customers.get(customerIndex).printFullName());
             System.out.println("-------------------------------------------------------------");
 
+            // Display the menu
             System.out.println("============== My Hotel System - Customer Menu ==============");
             System.out.println("1- New reservation                                          +");
             System.out.println("2- Update exist reservation                                 +");
@@ -164,14 +167,19 @@ public class Application {
                 case 1:
                     newReservation(customerIndex);
                     break;
+
                 case 2:
                     updateReservation(customerIndex);
                     break;
+
                 case 3:
                     cancelReservation(customerIndex);
                     break;
+
                 case 4:
                     displayReservationsOfCustomer(customerIndex);
+                    break;
+
                 case 5:
                     break;
                 default:
@@ -193,10 +201,9 @@ public class Application {
         System.out.println("============= My Hotel System - New Reservation =============");
 
         // Get the index of the selected room
-        int indexOfSelectedRoom = -1;
-        indexOfSelectedRoom = chooseRoom();
+        int indexOfSelectedRoom = chooseRoom();
 
-        // If the user choose to go back or if he chose a non exist room
+        // If the user choose to go back or choose a room that doesn't exist
         if(indexOfSelectedRoom < 0){
             return;
         }
@@ -206,6 +213,7 @@ public class Application {
 
     }
 
+    // Display the rooms to choose from
     public static int chooseRoom(){
 
         int choice;
@@ -237,14 +245,39 @@ public class Application {
                 {
                     return -1;
                 }
+
                 default:
                     System.out.println("Please enter a valid choice");
             }
-        }while(choice < 0 && choice > 3);
+        }while(choice != 1 && choice != 2);
 
-        int selectedRoom = searchRoom();
+        // Go to search for the room that user will select
+        return searchRoom();
+    }
 
-        return selectedRoom;
+    // Method to search for a room
+    public static int searchRoom(){
+        // No match value
+        int index = -1;
+
+        // Get the number of rooms
+        int numOfRooms = rooms.size();
+
+        do{
+            // Get the room number
+            int roomNum = readInt("Enter the room number: ");
+
+            // Search for index of the room
+            for(int i = 0; i < numOfRooms; i++){
+                if((rooms.get(i).getRoomNumber() == roomNum) && rooms.get(i).isAvailable()){
+                    index = i;
+                    return index;
+                }
+            }
+            System.out.println("Please enter a valid room number from the above table\n");
+        }while(index < 0);
+
+        return index;
     }
 
     // Method to create new reservation
@@ -270,6 +303,8 @@ public class Application {
         Reservation.printHeader();
         System.out.println(reservations.get(indexOfNewReservation).toString());
         System.out.println("-------------------------------------------------------------------------------------------------------------");
+
+        // Print success message
         System.out.println("Reservation created successfully");
     }
 
@@ -599,30 +634,6 @@ public class Application {
         System.out.println("---------------------------------------------------------------------");
     }
 
-    // Method to search for a room
-    public static int searchRoom(){
-        // No match value
-        int index = -1;
-
-        // Get the number of rooms
-        int numOfRooms = rooms.size();
-
-        do{
-            // Get the room number
-            int roomNum = readInt("Enter the room number: ");
-
-            // Search for index of the room
-            for(int i = 0; i < numOfRooms; i++){
-                if((rooms.get(i).getRoomNumber() == roomNum) && rooms.get(i).isAvailable()){
-                    index = i;
-                    return index;
-                }
-            }
-            System.out.println("Please enter a valid room number from the above table\n");
-        }while(index < 0);
-
-        return index;
-    }
 
     public static LocalDate inputDate(String prompt){
         LocalDate enteredDate = null;

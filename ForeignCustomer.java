@@ -1,4 +1,4 @@
-public class ForeignCustomer extends Customer{
+public class ForeignCustomer extends Customer {
     // Attributes
     private String passport;
     private String country;
