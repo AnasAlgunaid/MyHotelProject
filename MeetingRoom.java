@@ -21,7 +21,7 @@ public class MeetingRoom extends Room{
     public static void printHeader(){
         System.out.println();
         System.out.println("---------------------------------------------------------------------");
-        System.out.printf("%-20s %-15s %-15s %-20s \n", "Room number", "Price", "Available", "Capacity(Persons)");
+        System.out.printf("%-20s %-15s %-15s %-20s \n", "Room number", "Price", "Available", "Capacity(People)");
         System.out.println("---------------------------------------------------------------------");
     }
 
@@ -29,4 +29,4 @@ public class MeetingRoom extends Room{
     public String toString() {
         return (String.format("%-20d %-15s %-15s %-20d", super.getRoomNumber(),  super.getPrice(),  (super.isAvailable()?"Yes": "No"), this.capacity));
     }
-}
+} // End of MeetingRoom class

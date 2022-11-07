@@ -14,10 +14,13 @@ public class Customer extends User{
     }
 
     // Other methods
+
+    // Increment the number of reservations
     public void addReservation(){
         numOfReservations++;
     }
 
+    // Decrement the number of reservations
     public void cancelReservation(){
         numOfReservations--;
     }
@@ -32,4 +35,4 @@ public class Customer extends User{
     public String toString() {
         return (String.format("%-17s %-20s %-17s %-15d", getID(), (getFirstName() + " " + getLastName()), getPhoneNumber(), getNumOfReservations()));
     }
-}
+} // End of Customer class

@@ -1,5 +1,4 @@
 import java.time.LocalDate;
-import java.util.Random;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -23,50 +22,30 @@ public class Reservation {
     }
 
     // Getters and setters
-
-
     public String getReservationID() {
         return reservationID;
     }
-
 
     public Customer getCustomer() {
         return customer;
     }
 
-//    public void setCustomer(Customer customer) {
-//        this.customer = customer;
-//    }
-
     public Room getRoom() {
         return room;
     }
 
-//    public void setRoom(Room room) {
-//        this.room = room;
-//    }
-//
-//    public LocalDate getCheck_in() {
-//        return check_in;
-//    }
-
     public boolean setCheck_in(LocalDate check_in) {
-
         LocalDate todayDate = LocalDate.now();
-
         int compareValue = check_in.compareTo(todayDate);
         if(compareValue >= 0){
             this.check_in = check_in;
             return true;
         }
+
         else{
             return false;
         }
     }
-
-//    public LocalDate getCheck_out() {
-//        return check_out;
-//    }
 
     public boolean setCheck_out(LocalDate check_out) {
         if(DAYS.between(this.check_in, check_out) > 0){
@@ -80,21 +59,18 @@ public class Reservation {
 
     }
 
-//    public double getTotalPrice() {
-//        return totalPrice;
-//    }
-
-
     // Other methods
     public double calculateTotalPrice(){
         return ((DAYS.between(check_in, check_out)) * this.room.getPrice());
     }
 
+    // Generate a unique ID
     public String generateReservationID(){
         int ID = ++startID;
         return String.format("%06d", ID);
     }
 
+    // Check the status of the reservation to see if it's finished, and change the room's availability based on that.
     public void automaticUpdateAvailability(){
         LocalDate todayDate = LocalDate.now();
 
@@ -108,6 +84,7 @@ public class Reservation {
 
     }
 
+    // Check if the reservation is valid based on today's date
     public boolean isValid(){
         LocalDate todayDate = LocalDate.now();
 
@@ -133,4 +110,4 @@ public class Reservation {
                 this.check_out.toString(), (isValid()? "Valid": "Expired"),
                 this.totalPrice));
     }
-}
+} // End of Reservation class

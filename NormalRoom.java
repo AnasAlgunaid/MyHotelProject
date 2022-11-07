@@ -30,4 +30,4 @@ public class NormalRoom extends Room{
     public String toString() {
         return (String.format("%-20d %-15s %-15s %-20d", super.getRoomNumber(),  super.getPrice(),  (super.isAvailable()?"Yes": "No"), this.numOfBeds));
     }
-}
+} // End of NormalRoom class

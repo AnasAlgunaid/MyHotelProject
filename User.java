@@ -1,6 +1,4 @@
-import java.util.Random;
-
-public class User {
+public abstract class User {
     // Data Fields
     private String ID;
     private String firstName;
@@ -23,10 +21,6 @@ public class User {
     public String getID() {
         return ID;
     }
-
-//    public void setID(String ID) {
-//        this.ID = ID;
-//    }
 
     public String getFirstName() {
         return firstName;
@@ -65,22 +59,7 @@ public class User {
         return (firstName + " " + lastName);
     }
 
-//    public static String generateID(){
-//        String id = "";
-//        // Generate random id of 5 numbers
-//        Random random = new Random();
-//        for(int i = 0; i < 5; i++){
-//            int randomNum = random.nextInt(10);
-//            id += randomNum;
-//        }
-//
-//        return id;
-//    }
-
     @Override
-    public String toString() {
-        return (String.format("%-15s %-25s %-12s", ID, (firstName + lastName), phoneNumber));
-    }
+    public abstract String toString();
 
-
-}
+} // End of User class

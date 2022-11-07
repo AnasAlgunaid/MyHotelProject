@@ -16,8 +16,6 @@ public class Room {
     }
 
     // Getters and setters
-
-
     public int getRoomNumber() {
         return roomNumber;
     }
@@ -42,5 +40,4 @@ public class Room {
         this.available = available;
     }
 
-
-}
+} // End of Room class
