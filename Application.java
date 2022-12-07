@@ -1142,6 +1142,7 @@ public class Application {
         // If the customer is resident
         if(customers.get(customerIndex) instanceof ForeignCustomer){
             ForeignCustomer.printHeader();
+            System.out.println(customers.get(customerIndex).toString());
         }
 
         // If the customer is citizen
